@@ -77,49 +77,49 @@
         <form action="${pageContext.request.contextPath}/registration" method="post">
             <div class="form-group">
                 <label for="nameua">
-                    <fmt:message key="registartion.label.nameUa"/>
+                    <fmt:message key="registration.field.label.nameUa"/>
                 </label>
                 <input type="text"
                        class="form-control"
                        id="nameua"
                        name="nameua"
-                       placeholder='<fmt:message key="registartion.label.placeholder.nameUa"/>'>
+                       placeholder='<fmt:message key="registration.field.placeholder.nameUa"/>'>
             </div>
 
             <div class=" form-group">
                 <label for="nameen">
-                    <fmt:message key="registartion.label.nameEn"/>
+                    <fmt:message key="registration.field.label.nameEn"/>
                 </label>
                 <input type="text"
                        class="form-control"
                        id="nameen"
                        name="nameen"
-                       placeholder='<fmt:message key="registartion.label.placeholder.nameEn"/>'>
+                       placeholder='<fmt:message key="registration.field.placeholder.nameEn"/>'>
             </div>
 
             <div class="form-group">
                 <label for="username">
-                    <fmt:message key="registartion.label.login"/>
+                    <fmt:message key="registration.field.label.login"/>
                 </label>
                 <input type="text"
                        class="form-control"
                        id="username"
                        name="username"
-                       placeholder='<fmt:message key="registartion.label.placeholder.email"/>'>
+                       placeholder='<fmt:message key="registration.field.placeholder.email"/>'>
             </div>
 
             <div class=" form-group">
                 <label for="username">
-                    <fmt:message key="login.label.password"/>
+                    <fmt:message key="registration.field.label.password"/>
                 </label>
                 <input type="password"
                        class="form-control"
                        id="password"
                        name="password"
-                       placeholder='<fmt:message key="registartion.label.placeholder.password"/>'>
+                       placeholder='<fmt:message key="registration.field.placeholder.password"/>'>
             </div>
             <button type="submit" class="btn btn-primary">
-                <fmt:message key="registration.label.button"/>
+                <fmt:message key="registration.button.label."/>
             </button>
         </form>
     </div>

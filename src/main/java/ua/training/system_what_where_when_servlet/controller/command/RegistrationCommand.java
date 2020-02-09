@@ -1,10 +1,8 @@
 package ua.training.system_what_where_when_servlet.controller.command;
 
 import org.apache.log4j.Logger;
-import ua.training.system_what_where_when_servlet.controller.command.Command;
 import ua.training.system_what_where_when_servlet.dto.UserRegistrationDTO;
-import ua.training.system_what_where_when_servlet.service.ServiceFactory;
-import ua.training.system_what_where_when_servlet.service.UserRegistrationService;
+import ua.training.system_what_where_when_servlet.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,10 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 public class RegistrationCommand implements Command {
     private static final Logger LOGGER = Logger.getLogger(RegistrationCommand.class);
 
-    UserRegistrationService userRegistrationService;
+   private UserService userService = new UserService();
 
     public RegistrationCommand() {
-        this.userRegistrationService = ServiceFactory.getInstance().getUserRegistrationService();
     }
 
     @Override
@@ -34,7 +31,7 @@ public class RegistrationCommand implements Command {
         userRegistrationDTO.setEmail(username);
         userRegistrationDTO.setPassword(password);
 
-        ServiceFactory.getInstance().getUserRegistrationService().register(userRegistrationDTO);
+        userService.registerNewUser(userRegistrationDTO);
         return "/login.jsp";
 
     }

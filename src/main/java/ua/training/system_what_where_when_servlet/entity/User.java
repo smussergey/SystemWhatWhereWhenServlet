@@ -1,6 +1,8 @@
 package ua.training.system_what_where_when_servlet.entity;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 public class User {
     private Integer id;
@@ -90,4 +92,6 @@ public class User {
                 "email='" + email + '\'' +
                 '}';
     }
+
+
 }

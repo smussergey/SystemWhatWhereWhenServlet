@@ -8,7 +8,7 @@
 <html>
 <head>
     <title>
-        <fmt:message key="index.page.title"/>
+        <fmt:message key="games.statistics.page.title"/>
     </title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -119,22 +119,22 @@
                 <thead class="thead-light">
                 <tr>
                     <th>
-                        <fmt:message key="games.table.header.date"/>
+                        <fmt:message key="game.table.header.date"/>
                     </th>
                     <th>
-                        <fmt:message key="games.table.header.team"/>
+                        <fmt:message key="game.table.header.player"/>
                     </th>
                     <th>
-                        <fmt:message key="games.table.header.team"/>
+                        <fmt:message key="game.table.header.player"/>
                     </th>
                     <th>
-                        <fmt:message key="games.table.header.scores"/>
+                        <fmt:message key="game.table.header.scores"/>
                     </th>
                     <th>
-                        <fmt:message key="games.table.header.appeal.stage"/>
+                        <fmt:message key="game.table.header.appeal.stage"/>
                     </th>
                     <th>
-                        <fmt:message key="games.statistics.table.header.game.statistics"/>
+                        <fmt:message key="games.table.header.get.game.statistics"/>
                     </th>
                 </tr>
                 </thead>
@@ -150,10 +150,10 @@
                             <%--                    <td><span th:if="${lang.equals('en')}" th:text="${gameDTO.opponentNameEn}"></span>--%>
                             <%--                        <span th:if="${lang.equals('ua')}" th:text="${gameDTO.opponentNameUa}"></span></td>--%>
                         <td>
-                            <c:out value="${gameDTO.playerNameEn}"/>
+                            <c:out value="${gameDTO.firstPlayerNameEn}"/>
                         </td>
                         <td>
-                            <c:out value="${gameDTO.opponentNameEn}"/>
+                            <c:out value="${gameDTO.secondPlayerNameEn}"/>
                         </td>
                         <td>
                             <c:out value="${gameDTO.scores}"/>
@@ -165,7 +165,7 @@
                             <form action="${pageContext.request.contextPath}/referee/gameDetailsReferee" method="post">
                                 <input type="hidden" name="gameid" value="${gameDTO.id}">
                                 <button class="button" type="submit">
-                                    <fmt:message key="games.statistics.link.label.get"/>
+                                    <fmt:message key="games.statistics.button.label.get"/>
                                 </button>
                             </form>
                         </td>

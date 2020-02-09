@@ -1,12 +1,10 @@
 package ua.training.system_what_where_when_servlet.dao.mapper;
 
 import org.apache.log4j.Logger;
-import ua.training.system_what_where_when_servlet.dao.impl.UserDaoImpl;
 import ua.training.system_what_where_when_servlet.entity.Game;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.Map;
 
 public class GameMapper implements ObjectMapper<Game> {
@@ -18,7 +16,7 @@ public class GameMapper implements ObjectMapper<Game> {
         game.setId(rs.getInt("game.game_id"));
         LOGGER.info("GameMapper class, extractFromResultSet method: game date: " + rs.getDate("game.date"));
         game.setDate(rs.getDate("game.date").toLocalDate());
-//        game.setDate(LocalDate.now()); //TODO correct
+
         return game;
     }
 

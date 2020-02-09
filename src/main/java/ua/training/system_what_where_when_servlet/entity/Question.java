@@ -3,13 +3,12 @@ package ua.training.system_what_where_when_servlet.entity;
 
 import java.util.Objects;
 
-public class AnsweredQuestion {
+public class Question {
     private Integer id;
     private Game game;
-    private Appeal appeal;
     private User userWhoGotPoint;
 
-    public AnsweredQuestion() {
+    public Question() {
     }
 
     public Integer getId() {
@@ -28,14 +27,6 @@ public class AnsweredQuestion {
         this.game = game;
     }
 
-    public Appeal getAppeal() {
-        return appeal;
-    }
-
-    public void setAppeal(Appeal appeal) {
-        this.appeal = appeal;
-    }
-
     public User getUserWhoGotPoint() {
         return userWhoGotPoint;
     }
@@ -47,8 +38,8 @@ public class AnsweredQuestion {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof AnsweredQuestion)) return false;
-        AnsweredQuestion that = (AnsweredQuestion) o;
+        if (!(o instanceof Question)) return false;
+        Question that = (Question) o;
         return id.equals(that.id);
     }
 

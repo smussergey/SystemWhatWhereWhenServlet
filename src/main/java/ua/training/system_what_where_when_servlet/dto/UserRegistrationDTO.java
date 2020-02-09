@@ -38,3 +38,4 @@ public class UserRegistrationDTO {
         this.password = password;
     }
 }
+

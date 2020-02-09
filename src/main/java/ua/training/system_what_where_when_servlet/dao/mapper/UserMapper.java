@@ -22,6 +22,29 @@ public class UserMapper implements ObjectMapper<User> {
         return user;
     }
 
+    public User extractFromResultSetForFirstPlayer(ResultSet rs) throws SQLException {
+        User user = new User();
+        user.setId(rs.getInt("us1.user_id"));
+        user.setNameUa(rs.getString("us1.name_ua"));
+        user.setNameEn(rs.getString("us1.name_en"));
+        user.setEmail(rs.getString("us1.email"));
+        user.setPassword(rs.getString("us1.password"));
+        user.setRole(Role.valueOf(rs.getString("us1.role")));
+
+        return user;
+    }
+
+    public User extractFromResultSetForSecondPlayer(ResultSet rs) throws SQLException {
+        User user = new User();
+        user.setId(rs.getInt("us2.user_id"));
+        user.setNameUa(rs.getString("us2.name_ua"));
+        user.setNameEn(rs.getString("us2.name_en"));
+        user.setEmail(rs.getString("us2.email"));
+        user.setPassword(rs.getString("us2.password"));
+        user.setRole(Role.valueOf(rs.getString("us2.role")));
+
+        return user;
+    }
     public User extractFromResultSetForAppeal(ResultSet rs) throws SQLException {
         User user = new User();
         user.setId(rs.getInt("userappealed.user_id"));

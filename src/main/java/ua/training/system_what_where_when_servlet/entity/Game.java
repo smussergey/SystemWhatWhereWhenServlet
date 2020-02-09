@@ -6,9 +6,10 @@ import java.util.*;
 public class Game {
     private Integer id;
     private LocalDate date;
-    private List<User> users = new ArrayList<>();
+    private User firstPlayer;
+    private User secondPlayer;
     private Set<Appeal> appeals = new HashSet<>();
-    private List<AnsweredQuestion> answeredQuestions = new ArrayList<>();
+    private List<Question> questions = new ArrayList<>(); // TODO Check to use Set
 
     public Game() {
     }
@@ -29,12 +30,20 @@ public class Game {
         this.date = date;
     }
 
-    public List<User> getUsers() {
-        return users;
+    public User getFirstPlayer() {
+        return firstPlayer;
     }
 
-    public void setUsers(List<User> users) {
-        this.users = users;
+    public void setFirstPlayer(User firstPlayer) {
+        this.firstPlayer = firstPlayer;
+    }
+
+    public User getSecondPlayer() {
+        return secondPlayer;
+    }
+
+    public void setSecondPlayer(User secondPlayer) {
+        this.secondPlayer = secondPlayer;
     }
 
     public Set<Appeal> getAppeals() {
@@ -45,12 +54,12 @@ public class Game {
         this.appeals = appeals;
     }
 
-    public List<AnsweredQuestion> getAnsweredQuestions() {
-        return answeredQuestions;
+    public List<Question> getQuestions() {
+        return questions;
     }
 
-    public void setAnsweredQuestions(List<AnsweredQuestion> answeredQuestions) {
-        this.answeredQuestions = answeredQuestions;
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
     }
 
     @Override

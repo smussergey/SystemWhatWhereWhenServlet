@@ -8,14 +8,14 @@ import java.util.List;
 public class GameDTO {
     private Integer id;
     private LocalDate date;
-    private String playerNameUa;
-    private String playerNameEn;
-    private String opponentNameUa;
-    private String opponentNameEn;
+    private String firstPlayerNameUa;
+    private String firstPlayerNameEn;
+    private String secondPlayerNameUa;
+    private String secondPlayerNameEn;
     private String scores;
     private String appealStage;
     private boolean isAppealPossible;
-    private List<AnsweredQuestionDTO> answeredQuestionDTOs = new ArrayList<>();
+    private List<QuestionDTO> questionDTOs = new ArrayList<>();
 
     public Integer getId() {
         return id;
@@ -33,36 +33,36 @@ public class GameDTO {
         this.date = date;
     }
 
-    public String getPlayerNameUa() {
-        return playerNameUa;
+    public String getFirstPlayerNameUa() {
+        return firstPlayerNameUa;
     }
 
-    public void setPlayerNameUa(String playerNameUa) {
-        this.playerNameUa = playerNameUa;
+    public void setFirstPlayerNameUa(String firstPlayerNameUa) {
+        this.firstPlayerNameUa = firstPlayerNameUa;
     }
 
-    public String getPlayerNameEn() {
-        return playerNameEn;
+    public String getFirstPlayerNameEn() {
+        return firstPlayerNameEn;
     }
 
-    public void setPlayerNameEn(String playerNameEn) {
-        this.playerNameEn = playerNameEn;
+    public void setFirstPlayerNameEn(String firstPlayerNameEn) {
+        this.firstPlayerNameEn = firstPlayerNameEn;
     }
 
-    public String getOpponentNameUa() {
-        return opponentNameUa;
+    public String getSecondPlayerNameUa() {
+        return secondPlayerNameUa;
     }
 
-    public void setOpponentNameUa(String opponentNameUa) {
-        this.opponentNameUa = opponentNameUa;
+    public void setSecondPlayerNameUa(String secondPlayerNameUa) {
+        this.secondPlayerNameUa = secondPlayerNameUa;
     }
 
-    public String getOpponentNameEn() {
-        return opponentNameEn;
+    public String getSecondPlayerNameEn() {
+        return secondPlayerNameEn;
     }
 
-    public void setOpponentNameEn(String opponentNameEn) {
-        this.opponentNameEn = opponentNameEn;
+    public void setSecondPlayerNameEn(String secondPlayerNameEn) {
+        this.secondPlayerNameEn = secondPlayerNameEn;
     }
 
     public String getScores() {
@@ -89,11 +89,11 @@ public class GameDTO {
         isAppealPossible = appealPossible;
     }
 
-    public List<AnsweredQuestionDTO> getAnsweredQuestionDTOs() {
-        return answeredQuestionDTOs;
+    public List<QuestionDTO> getQuestionDTOs() {
+        return questionDTOs;
     }
 
-    public void setAnsweredQuestionDTOs(List<AnsweredQuestionDTO> answeredQuestionDTOs) {
-        this.answeredQuestionDTOs = answeredQuestionDTOs;
+    public void setQuestionDTOs(List<QuestionDTO> questionDTOs) {
+        this.questionDTOs = questionDTOs;
     }
 }

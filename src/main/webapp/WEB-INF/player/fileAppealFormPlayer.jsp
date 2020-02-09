@@ -185,20 +185,20 @@
 
             <tbody>
 
-            <c:forEach items="${gameDTO.answeredQuestionDTOs}" var="answeredQuestionDTO">
+            <c:forEach items="${gameDTO.questionDTOS}" var="questionDTO">
                 <tr>
                     <td>
-                        <c:out value="${answeredQuestionDTO.id}"/>
+                        <c:out value="${questionDTO.id}"/>
                     </td>
                         <%--                        <td><span th:if="${lang.equals('en')}"--%>
-                        <%--                        th:text="${answeredQuestionDTO.nameWhoGotPointEn}"></span>--%>
+                        <%--                        th:text="${questionDTO.nameWhoGotPointEn}"></span>--%>
                         <%--                        <span th:if="${lang.equals('ua')}"--%>
-                        <%--                              th:text="${answeredQuestionDTO.nameWhoGotPointEn}"></span></td>--%>
+                        <%--                              th:text="${questionDTO.nameWhoGotPointEn}"></span></td>--%>
                     <td>
-                        <c:out value="${answeredQuestionDTO.nameWhoGotPointEn}"/>
+                        <c:out value="${questionDTO.nameWhoGotPointEn}"/>
                     </td>
                     <td>
-                        <c:out value="${answeredQuestionDTO.appealStage}"/>
+                        <c:out value="${questionDTO.appealStage}"/>
                     </td>
                 </tr>
             </c:forEach>
@@ -212,11 +212,11 @@
         </h1>
         <form action="${pageContext.request.contextPath}/player/fileAppealAgainstAnsweredQuestions" method="get">
             <div class="form-group">
-                <c:forEach items="${gameDTO.answeredQuestionDTOs}" var="answeredQuestionDTO">
+                <c:forEach items="${gameDTO.questionDTOS}" var="questionDTO">
                     <span>
-                      <c:if test="${answeredQuestionDTO.appealPossible}">
+                      <c:if test="${questionDTO.appealPossible}">
                         <input type="checkbox" name="ids"
-                           value="${answeredQuestionDTO.id}"/> ${answeredQuestionDTO.id}
+                           value="${questionDTO.id}"/> ${questionDTO.id}
                       </c:if>
                     </span>
                 </c:forEach>

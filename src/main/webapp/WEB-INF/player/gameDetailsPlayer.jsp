@@ -193,20 +193,20 @@
 
             <tbody>
 
-            <c:forEach items="${gameDTO.answeredQuestionDTOs}" var="answeredQuestionDTO">
+            <c:forEach items="${gameDTO.questionDTOS}" var="questionDTO">
                 <tr>
                     <td>
-                        <c:out value="${answeredQuestionDTO.id}"/>
+                        <c:out value="${questionDTO.id}"/>
                     </td>
                         <%--                        <td><span th:if="${lang.equals('en')}"--%>
-                        <%--                        th:text="${answeredQuestionDTO.nameWhoGotPointEn}"></span>--%>
+                        <%--                        th:text="${questionDTO.nameWhoGotPointEn}"></span>--%>
                         <%--                        <span th:if="${lang.equals('ua')}"--%>
-                        <%--                              th:text="${answeredQuestionDTO.nameWhoGotPointEn}"></span></td>--%>
+                        <%--                              th:text="${questionDTO.nameWhoGotPointEn}"></span></td>--%>
                     <td>
-                        <c:out value="${answeredQuestionDTO.nameWhoGotPointEn}"/>
+                        <c:out value="${questionDTO.nameWhoGotPointEn}"/>
                     </td>
                     <td>
-                        <c:out value="${answeredQuestionDTO.appealStage}"/>
+                        <c:out value="${questionDTO.appealStage}"/>
                     </td>
                 </tr>
             </c:forEach>

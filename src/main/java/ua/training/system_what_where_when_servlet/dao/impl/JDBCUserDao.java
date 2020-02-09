@@ -13,34 +13,35 @@ import ua.training.system_what_where_when_servlet.entity.User;
 import java.sql.*;
 import java.util.*;
 
-public class UserDaoImpl implements UserDao {
-    private static final Logger LOGGER = Logger.getLogger(UserDaoImpl.class);
+public class JDBCUserDao implements UserDao {
+    private static final Logger LOGGER = Logger.getLogger(JDBCUserDao.class);
+    private static final String CREATE_USER_QUERY = "INSERT INTO user (name_ua, name_en, email, password, role ) VALUES (?,?,?,?,?)";
+    private static final String GET_ALL_USERS_DTOS_BY_ROLE_QUERY = "SELECT user_id, name_en, name_ua FROM user WHERE user.role = ?";
+
     private Connection connection;
 
-    UserDaoImpl(Connection connection) {
+    JDBCUserDao(Connection connection) {
         this.connection = connection;
     }
 
     @Override
     public void create(User user) {
         LOGGER.info(String.format("In UserDaoImpl, method create user: " + user));
-//        boolean flag = false;
-        try (PreparedStatement ps = connection.prepareStatement
-                ("INSERT INTO user (name_ua, name_en, email, password, role )" +
-                        " VALUES (?,?,?,?,?)")) {
+        Integer userId;
+        try (PreparedStatement ps = connection.prepareStatement(CREATE_USER_QUERY, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, user.getNameUa());
             ps.setString(2, user.getNameEn());
             ps.setString(3, user.getEmail());
             ps.setString(4, user.getPassword());
             ps.setString(5, user.getRole().name());
+
             ps.executeUpdate();
-//            flag = true;
+
         } catch (Exception e) { //TODO check what exception to use
             LOGGER.error("SQLException: " + e.toString());
             throw new NotUniqueLoginException("Not Unique Login", user.getEmail());
         }
-        LOGGER.info("User was saved");
-//    return flag;
+        LOGGER.info(String.format("method create user: user was created"));
     }
 
     @Override
@@ -78,7 +79,7 @@ public class UserDaoImpl implements UserDao {
             }//TODO : ask question how avoid two user with the same email if necessary?
         } catch (SQLException ex) {
             LOGGER.error("Exception in class: UserDaoImpl, method: findByEmail.", ex);
-            throw new RuntimeException(ex); //TODO Correct
+            return Optional.empty();
         }
         return result;
     }
@@ -93,8 +94,7 @@ public class UserDaoImpl implements UserDao {
     public List<UserDTO> getAllUserDTOsByRole(Role role) {
         List<UserDTO> userDTOs = new ArrayList<>();
 
-        try (PreparedStatement ps = connection.prepareStatement(" select user_id, name_en, name_ua from user " +
-                " where user.role = ?")) {
+        try (PreparedStatement ps = connection.prepareStatement(GET_ALL_USERS_DTOS_BY_ROLE_QUERY)) {
             ps.setString(1, role.name());
             ResultSet rs;
             rs = ps.executeQuery();

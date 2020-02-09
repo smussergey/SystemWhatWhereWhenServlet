@@ -59,13 +59,6 @@
                     <fmt:message key="navbar.link.games.statistics"/>
                 </a>
             </li>
-            <li class="nav-item">
-                <%--                <a class="nav-link" th:href="@{/referee/history/consideration}"--%>
-                <%--                   th:text="#{navbar.link.history.consideration}"></a>--%>
-                <a class="nav-link" href="${pageContext.request.contextPath}/referee/historyConsideration">
-                    <fmt:message key="navbar.link.history.consideration"/>
-                </a>
-            </li>
         </ul>
         <ul class="navbar-nav my-2 my-lg-0">
             <li class="nav-item">
@@ -104,14 +97,14 @@
 
 <div class="container" style="margin-top:30px">
     <h2 class="panel-title">
-        <fmt:message key="new.game.form.header"/>
+        <fmt:message key="game.new.form.header"/>
     </h2>
     <form action="${pageContext.request.contextPath}/referee/generateNewGameReferee" method="post">
         <div class="custom-control mb-3">
             <label for="player">
-                <fmt:message key="games.new.game.team.label"/>
+                <fmt:message key="game.new.field.label.first.player"/>
             </label>
-            <select class="custom-select mb-3" id="player" name="playerid">
+            <select class="custom-select mb-3" id="player" name="firstplayerid">
                 <%--                <option th:if="${lang.equals('en')}"--%>
                 <%--                        th:each="player : ${players}"--%>
                 <%--                        th:value="${player.id}" th:text="${player.nameEn}">--%>
@@ -129,12 +122,11 @@
         </div>
         <div class="custom-control mb-3">
             <label for="opponent">
-                <fmt:message key="games.new.game.opponent.label"/>
+                <fmt:message key="game.new.field.label.second.player"/>
             </label>
-            <select class="custom-select mb-3" id="opponent" name="opponentid">
-                <!--                TODO move to property  th:value="0"-->
+            <select class="custom-select mb-3" id="opponent" name="secondplayerid">
                 <option value="0">
-                    <fmt:message key="games.new.game.option.label.opponent"/>
+                    <fmt:message key="game.new.field.label.second.player"/>
                 </option>
                 <%--                <option th:if="${lang.equals('en')}"--%>
                 <%--                        th:each="player : ${players}"--%>
@@ -155,13 +147,13 @@
 
         <div class="custom-control mb-3">
             <label for="quantity">
-                <fmt:message key="games.new.game.max.scores.label"/>
+                <fmt:message key="game.new.field.label.max.scores"/>
             </label>
             <br>
             <input type="number" min="1" id="quantity" name="maxscores" required/>
         </div>
         <button type="submit" class="btn btn-primary">
-            <fmt:message key="games.game.new.label.button"/>
+            <fmt:message key="game.new.button.label"/>
         </button>
     </form>
 </div>

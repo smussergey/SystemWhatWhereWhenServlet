@@ -8,9 +8,9 @@ public class Appeal {
     private Integer id;
     private LocalDate date;
     private AppealStage appealStage;
-    private Game game;
+    private Game game; // TODO check whether it is needed
     private User user;
-    private List<AnsweredQuestion> appealedQuestions = new ArrayList<>();
+    private List<AppealedQuestion> appealedQuestions = new ArrayList<>();
 
     public Appeal() {
     }
@@ -55,11 +55,11 @@ public class Appeal {
         this.user = user;
     }
 
-    public List<AnsweredQuestion> getAppealedQuestions() {
+    public List<AppealedQuestion> getAppealedQuestions() {
         return appealedQuestions;
     }
 
-    public void setAppealedQuestions(List<AnsweredQuestion> appealedQuestions) { // TODO change to list
+    public void setAppealedQuestions(List<AppealedQuestion> appealedQuestions) {
         this.appealedQuestions = appealedQuestions;
     }
 

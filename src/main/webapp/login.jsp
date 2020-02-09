@@ -77,29 +77,29 @@
         <form action="${pageContext.request.contextPath}/login" method="post">
             <div class="form-group">
                 <label for="username">
-                    <fmt:message key="login.label.login"/>
+                    <fmt:message key="login.field.label.login"/>
                 </label>
                 <input type="text"
                        class="form-control"
                        id="username"
                        value="ad"
                        name="username"
-                       value='<fmt:message key="login.label.placeholder.password"/>'>
+                       value='<fmt:message key="login.field.placeholder.login"/>'>
             </div>
 
             <div class=" form-group">
                 <label for="username">
-                    <fmt:message key="login.label.password"/>
+                    <fmt:message key="login.field.label.password"/>
                 </label>
                 <input type="password"
                        class="form-control"
                        id="password"
                        value="adpas"
                        name="password"
-                       value='<fmt:message key="login.label.placeholder.password"/>'>
+                       value='<fmt:message key="login.field.placeholder.password"/>'>
             </div>
             <button type="submit" class="btn btn-primary">
-                <fmt:message key="login.label.button"/>
+                <fmt:message key="login.button.label"/>
             </button>
         </form>
     </div>
