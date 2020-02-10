@@ -1,20 +1,20 @@
 package ua.training.system_what_where_when_servlet.service;
 
 import org.apache.log4j.Logger;
-import ua.training.system_what_where_when_servlet.dao.DaoFactory;
-import ua.training.system_what_where_when_servlet.dao.GameDao;
 import ua.training.system_what_where_when_servlet.dto.GameDTO;
+import ua.training.system_what_where_when_servlet.entity.Game;
+import ua.training.system_what_where_when_servlet.entity.User;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class GameInformationService {
-    private static final Logger LOGGER = Logger.getLogger(UserService.class);
-    private final DaoFactory daoFactory = DaoFactory.getInstance();
+    private static final Logger LOGGER = Logger.getLogger(GameInformationService.class);
 
     private final UserService userService = new UserService();
-//    private final QuestionService questionService = new QuestionService();
+    private final QuestionService questionService = new QuestionService();
     private final GameService gameService = new GameService();
 
 //
@@ -35,15 +35,13 @@ public class GameInformationService {
 //    }
 
     public List<GameDTO> getGameStatisticsByAllGamesAndPlayers() {
-        LOGGER.info(String.format("GameStatisticsAndDetailsService class, getGameStatisticsByAllGamesAndPlayers method"));
-        GameDao gameDao = daoFactory.createGameDao();
+        LOGGER.info(String.format("In getGameStatisticsByAllGamesAndPlayers method"));
 
-        return gameDao.findAll().stream()
+        return gameService.findAll().stream()
                 .map(gameService::toGameDTO)
                 .sorted(Comparator.comparing(GameDTO::getDate).reversed())
                 .collect(Collectors.toList());
     }
-}
 
 
 //    public Page<GameDTO> getGamesStatisticsForLoggedInPlayer(Pageable pageable, Principal principal) throws EntityNotFoundException {
@@ -51,7 +49,18 @@ public class GameInformationService {
 //        return gameService.findAllByFirstPlayerOrSecondPlayer(player, player, pageable)
 //                .map(gameService::toGameDTO);
 //    }
-//
+
+
+    public List<GameDTO> getGamesStatisticsByLoggedInPlayer(String username) {
+        LOGGER.info(String.format("In getGamesStatisticsByLoggedInPlayer method"));
+        User player = userService.findByUsername(username);
+        return gameService.findAllByFirstPlayerOrSecondPlayer(player, player).stream()
+                .map(gameService::toGameDTO)
+                .sorted(Comparator.comparing(GameDTO::getDate).reversed())
+                .collect(Collectors.toList());
+    }
+
+
 //    public GameDTO getGameFullStatisticsByIdForReferee(Long id) {
 //        Game game = gameService.findById(id);
 //        GameDTO gameDTO = gameService.toGameDTO(game);
@@ -59,7 +68,19 @@ public class GameInformationService {
 //
 //        return gameDTO;
 //    }
-//
+
+
+    public GameDTO getGameFullStatisticsByIdForReferee(int id) {
+        LOGGER.info(String.format("In getGameFullStatisticsById method id=%s", id));
+        Game game = gameService.findById(id);
+        LOGGER.info(String.format("In getGameFullStatisticsById method game was found with id=%s", game.getId()));
+        GameDTO gameDTO = gameService.toGameDTO(game);
+        gameDTO.setQuestionDTOs(questionService.extractQuestionDTOsFromGame(game));
+
+        return gameDTO;
+    }
+
+
 //    public GameDTO getGameFullStatisticsByIdForPlayer(Long id) {
 //        Game game = gameService.findById(id);
 //        GameDTO gameDTO = gameService.toGameDTO(game);
@@ -69,20 +90,31 @@ public class GameInformationService {
 //        return gameDTO;
 //    }
 //
-//    private boolean checkIfLoggedInUserCanFileAppealAgainstGame(Game game) {
-//        return checkIfLoggedInUserCanFileAppealAgainstGameBecauseOfTime(game)
-//                && (!checkIfLoggedInUserFiledAppealOnThisGame(game));
-//    }
-//
-//    private boolean checkIfLoggedInUserCanFileAppealAgainstGameBecauseOfTime(Game game) {
-//        return game.getDate().isEqual(LocalDate.now());
-//    }
-//
-//    private boolean checkIfLoggedInUserFiledAppealOnThisGame(Game game) {
-//        return game.getAppeals().stream()
-//                .anyMatch(appeal -> appeal.getUser().equals(userService.findLoggedIndUser()));
-//    }
-//}
+
+        public GameDTO getGameFullStatisticsByIdForPlayer(Integer id, String username) {
+        Game game = gameService.findById(id);
+        GameDTO gameDTO = gameService.toGameDTO(game);
+        gameDTO.setQuestionDTOs(questionService.extractQuestionDTOsFromGame(game));
+        gameDTO.setAppealPossible(checkIfLoggedInUserCanFileAppealAgainstGame(game, username));
+
+        return gameDTO;
+    }
+
+
+    private boolean checkIfLoggedInUserCanFileAppealAgainstGame(Game game, String username) {
+        return checkIfLoggedInUserCanFileAppealAgainstGameBecauseOfTime(game)
+                && (!checkIfLoggedInUserFiledAppealOnThisGame(game, username));
+    }
+
+    private boolean checkIfLoggedInUserCanFileAppealAgainstGameBecauseOfTime(Game game) {
+        return game.getDate().isEqual(LocalDate.now());
+    }
+
+    private boolean checkIfLoggedInUserFiledAppealOnThisGame(Game game, String username) {
+        return game.getAppeals().stream()
+                .anyMatch(appeal -> appeal.getUser().equals(userService.findByUsername(username)));
+    }
+}
 
 
 //    public List<GameDTO> getGameStatisticsByAllGamesAndPlayers() {
@@ -214,4 +246,6 @@ public class GameInformationService {
 //
 //        return gameDTO;
 //    }
+//}
+
 //}

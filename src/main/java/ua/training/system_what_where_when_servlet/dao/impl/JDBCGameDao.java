@@ -2,10 +2,7 @@ package ua.training.system_what_where_when_servlet.dao.impl;
 
 import org.apache.log4j.Logger;
 import ua.training.system_what_where_when_servlet.dao.GameDao;
-import ua.training.system_what_where_when_servlet.dao.mapper.AppealMapper;
-import ua.training.system_what_where_when_servlet.dao.mapper.GameMapper;
-import ua.training.system_what_where_when_servlet.dao.mapper.QuestionMapper;
-import ua.training.system_what_where_when_servlet.dao.mapper.UserMapper;
+import ua.training.system_what_where_when_servlet.dao.mapper.*;
 import ua.training.system_what_where_when_servlet.entity.*;
 
 import java.sql.Date;
@@ -85,87 +82,90 @@ public class JDBCGameDao implements GameDao {
 
     @Override
     public Optional<Game> findById(int id) {
-//        Map<Integer, Question> answeredQuestions = new HashMap<>();
-//        Map<Integer, Appeal> appeals = new HashMap<>();
-//        Map<Integer, Game> games = new HashMap<>();
-//        Map<Integer, User> users = new HashMap<>();
-//
-//
-//        Optional<Game> result = Optional.empty();
-//        try (PreparedStatement ps = connection.prepareStatement("" +
-//                " select * from user " +
-//                " left join user_game " +
-//                " on  user.user_id = user_game.user_id " +
-//                " left join game " +
-//                " on user_game.game_id = game.game_id " +
-//                " left join answered_question " +
-//                " on game.game_id = answered_question.game_id " +
-//                " left join appeal " +
-//                " on answered_question.appeal_id = appeal.appeal_id " +
-//                " where game.game_id = ?")) {
-//
-//            ps.setInt(1, id);
-//            ResultSet rs;
-//
-//            rs = ps.executeQuery();
-//
-//            AnsweredQuestionMapper answeredQuestionMapper = new AnsweredQuestionMapper();
-//            AppealMapper appealMapper = new AppealMapper();
-//            GameMapper gameMapper = new GameMapper();
-//            UserMapper userMapper = new UserMapper();
-//
-//            while (rs.next()) {
-//                Game game = gameMapper
-//                        .extractFromResultSet(rs);
-//                game = gameMapper
-//                        .makeUnique(games, game);
-//
-//                User user = userMapper
-//                        .extractFromResultSet(rs);
-//                user = userMapper
-//                        .makeUnique(users, user);
-//
-//
-//                Appeal appeal = null;
-//
-//                if (rs.getInt("appeal.appeal_id") > 0) {
-//                    appeal = appealMapper
-//                            .extractFromResultSet(rs);
-//                    appeal = appealMapper
-//                            .makeUnique(appeals, appeal);
-//                    if (rs.getInt("appeal.user_id") == rs.getInt("user.user_id")) {
-//                        appeal.setUser(user);
-//                    }
-//                    game.getAppeals().add(appeal);
-//                }
-//
-//                Question question = answeredQuestionMapper
-//                        .extractFromResultSet(rs);
-//                question = answeredQuestionMapper
-//                        .makeUnique(answeredQuestions, question);
-//                question.setGame(game);
-//                if (rs.getInt("answered_question.user_id") > 0)
-//                    question.setUserWhoGotPoint(users.get(rs.getInt("answered_question.user_id")));
-//                if (rs.getInt("answered_question.appeal_id") > 0)
-//                    question.setAppeal(appeal);
-//
-//                if (game.getQuestions().contains(question)) {
-//                } else {
-//                    game.getQuestions().add(question);
-//                }
-////                game.getAnsweredQuestions().add(answeredQuestion);
-//
-//                if (game.getUsers().contains(user)) {
-//                } else {
-//                    game.getUsers().add(user);
-//                }
-//            }
-//        } catch (SQLException ex) {
-//            LOGGER.error("Exception in class: UserDaoImpl, method: findById.", ex);
-//            throw new RuntimeException(ex); //TODO Correct
-//        }
-//        return result = games.values().stream().findFirst();
-        return null; //TODO Correct
+        Map<Integer, Question> questions = new HashMap<>();
+        Map<Integer, Appeal> appeals = new HashMap<>();
+        Map<Integer, Game> games = new HashMap<>();
+        Map<Integer, User> users = new HashMap<>();
+        Map<Integer, AppealedQuestion> appealedQuestions = new HashMap<>();
+
+        try (PreparedStatement ps = connection.prepareStatement("" +
+                "SELECT * FROM game " +
+                " left join user as us1 " +
+                " on game.first_player_user_id = us1.user_id " +
+                " left join user as us2 " +
+                " on game.second_player_user_id = us2.user_id " +
+                " left join question " +
+                " on game.game_id = question.game_id " +
+                " left join appeal " +
+                " on game.game_id = appeal.game_id " +
+                " left join appealed_question " +
+                " on appeal.appeal_id = appealed_question.appeal_id " +
+                " where game.game_id = ?")) {
+
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            QuestionMapper questionMapper = new QuestionMapper();
+            AppealMapper appealMapper = new AppealMapper();
+            GameMapper gameMapper = new GameMapper();
+            UserMapper userMapper = new UserMapper();
+            AppealedQuestionMapper appealedQuestionMapper = new AppealedQuestionMapper();
+
+            while (rs.next()) {
+                Game game = gameMapper
+                        .extractFromResultSet(rs);
+                game = gameMapper
+                        .makeUnique(games, game);
+
+                User firstPlayer = userMapper
+                        .extractFromResultSetForFirstPlayer(rs);
+                firstPlayer = userMapper
+                        .makeUnique(users, firstPlayer);
+
+                game.setFirstPlayer(firstPlayer);
+
+                User secondPlayer = userMapper
+                        .extractFromResultSetForSecondPlayer(rs);
+                secondPlayer = userMapper
+                        .makeUnique(users, secondPlayer);
+
+                game.setSecondPlayer(secondPlayer);
+
+                Question question = questionMapper
+                        .extractFromResultSet(rs);
+                question = questionMapper
+                        .makeUnique(questions, question);
+                question.setGame(game);
+                question.setUserWhoGotPoint(users.get(rs.getInt("question.user_id")));
+
+
+                if (game.getQuestions().contains(question)) {
+                } else {
+                    game.getQuestions().add(question);
+                }
+
+                if (rs.getInt("appeal.appeal_id") > 0) {
+                    Appeal appeal = appealMapper
+                            .extractFromResultSet(rs);
+                    appeal = appealMapper
+                            .makeUnique(appeals, appeal);
+                    appeal.setUser(users.get(rs.getInt("appeal.user_id")));
+                    appeal.setGame(games.get(rs.getInt("appeal.game_id"))); // TODO check whether it is needed
+
+                    AppealedQuestion appealedQuestion = appealedQuestionMapper.extractFromResultSet(rs);
+                    appealedQuestion = appealedQuestionMapper
+                            .makeUnique(appealedQuestions, appealedQuestion);
+                    appealedQuestion.setAppeal(appeals.get(rs.getInt("appealed_question.appeal_id")));
+                    appealedQuestion.setQuestion(questions.get(rs.getInt("appealed_question.question_id")));
+                    appeal.getAppealedQuestions().add(appealedQuestion);
+
+                    game.getAppeals().add(appeal);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return games.values().stream().findFirst();
     }
 
     @Override
@@ -245,6 +245,87 @@ public class JDBCGameDao implements GameDao {
         }
         return new ArrayList<>(games.values());
     }
+
+    @Override //TODO rename method find by player
+    public List<Game> findAllByFirstPlayerOrSecondPlayer(User firstUser, User secondUser) {
+        Map<Integer, Question> questions = new HashMap<>();
+        Map<Integer, Appeal> appeals = new HashMap<>();
+        Map<Integer, Game> games = new HashMap<>();
+        Map<Integer, User> users = new HashMap<>();
+
+        try (PreparedStatement ps = connection.prepareStatement("" +
+                "SELECT * FROM game " +
+                " left join user as us1 " +
+                " on game.first_player_user_id = us1.user_id " +
+                " left join user as us2 " +
+                " on game.second_player_user_id = us2.user_id " +
+                " left join question " +
+                " on game.game_id = question.game_id " +
+                " left join appeal " +
+                " on game.game_id = appeal.game_id " +
+                " where game.first_player_user_id = ?" +
+                " or game.second_player_user_id = ?")) {
+
+            ps.setInt(1, firstUser.getId());
+            ps.setInt(2, secondUser.getId());
+            ResultSet rs = ps.executeQuery();
+
+            QuestionMapper questionMapper = new QuestionMapper();
+            AppealMapper appealMapper = new AppealMapper();
+            GameMapper gameMapper = new GameMapper();
+            UserMapper userMapper = new UserMapper();
+
+            while (rs.next()) {
+                Game game = gameMapper
+                        .extractFromResultSet(rs);
+                game = gameMapper
+                        .makeUnique(games, game);
+
+                User firstPlayer = userMapper
+                        .extractFromResultSetForFirstPlayer(rs);
+                firstPlayer = userMapper
+                        .makeUnique(users, firstPlayer);
+
+                game.setFirstPlayer(firstPlayer);
+
+                User secondPlayer = userMapper
+                        .extractFromResultSetForSecondPlayer(rs);
+                secondPlayer = userMapper
+                        .makeUnique(users, secondPlayer);
+
+                game.setSecondPlayer(secondPlayer);
+
+                Appeal appeal = null;
+
+                if (rs.getInt("appeal.appeal_id") > 0) {
+                    appeal = appealMapper
+                            .extractFromResultSet(rs);
+                    appeal = appealMapper
+                            .makeUnique(appeals, appeal);
+                    appeal.setUser(users.get(rs.getInt("appeal.user_id")));
+                    appeal.setGame(games.get(rs.getInt("appeal.game_id"))); // TODO check whether it is needed
+                    game.getAppeals().add(appeal);
+                }
+
+                Question question = questionMapper
+                        .extractFromResultSet(rs);
+                question = questionMapper
+                        .makeUnique(questions, question);
+                question.setGame(game);
+                question.setUserWhoGotPoint(users.get(rs.getInt("question.user_id")));
+
+
+                if (game.getQuestions().contains(question)) {
+                } else {
+                    game.getQuestions().add(question);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>(games.values());
+    }
+
 
     @Override
     public List<Game> findAllByUsername(String username) {

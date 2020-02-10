@@ -102,102 +102,102 @@
     </div>
 </nav>
 
-    <div class="container" style="margin-top:30px">
-        <%--        <div th:if=" ${gameDTOs.empty}">--%>
-<%--        <div>--%>
-<%--            <h1>--%>
-<%--                <fmt:message key="requested.information.is.absent"/>--%>
-<%--            </h1>--%>
-<%--        </div>--%>
+<div class="container" style="margin-top:30px">
+    <%--        <div th:if=" ${gameDTOs.empty}">--%>
+    <%--        <div>--%>
+    <%--            <h1>--%>
+    <%--                <fmt:message key="requested.information.is.absent"/>--%>
+    <%--            </h1>--%>
+    <%--        </div>--%>
 
-        <%--        <div th:if=" ${!gameDTOs.empty}" id="statistics">--%>
-        <div>
-            <table class="table table-striped table-hover table-bordered table-sm">
-                <h1>
-                    <fmt:message key="games.statistics.table.caption"/>
-                </h1>
-                <thead class="thead-light">
+    <%--        <div th:if=" ${!gameDTOs.empty}" id="statistics">--%>
+    <div id="statistics">
+        <table class="table table-striped table-hover table-bordered table-sm">
+            <h1>
+                <fmt:message key="games.statistics.table.caption"/>
+            </h1>
+            <thead class="thead-light">
+            <tr>
+                <th>
+                    <fmt:message key="game.table.header.date"/>
+                </th>
+                <th>
+                    <fmt:message key="game.table.header.player"/>
+                </th>
+                <th>
+                    <fmt:message key="game.table.header.player"/>
+                </th>
+                <th>
+                    <fmt:message key="game.table.header.scores"/>
+                </th>
+                <th>
+                    <fmt:message key="game.table.header.appeal.stage"/>
+                </th>
+                <th>
+                    <fmt:message key="games.table.header.get.game.statistics"/>
+                </th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <c:forEach items="${gameDTOs}" var="gameDTO">
                 <tr>
-                    <th>
-                        <fmt:message key="game.table.header.date"/>
-                    </th>
-                    <th>
-                        <fmt:message key="game.table.header.player"/>
-                    </th>
-                    <th>
-                        <fmt:message key="game.table.header.player"/>
-                    </th>
-                    <th>
-                        <fmt:message key="game.table.header.scores"/>
-                    </th>
-                    <th>
-                        <fmt:message key="game.table.header.appeal.stage"/>
-                    </th>
-                    <th>
-                        <fmt:message key="games.table.header.get.game.statistics"/>
-                    </th>
+                    <td>
+                        <c:out value="${gameDTO.date}"/>
+                    </td>
+                        <%--                    <td><span th:if="${lang.equals('en')}" th:text="${gameDTO.playerNameEn}"></span>--%>
+                        <%--                        <span th:if="${lang.equals('ua')}" th:text="${gameDTO.playerNameUa}"></span></td>--%>
+                        <%--                    <td><span th:if="${lang.equals('en')}" th:text="${gameDTO.opponentNameEn}"></span>--%>
+                        <%--                        <span th:if="${lang.equals('ua')}" th:text="${gameDTO.opponentNameUa}"></span></td>--%>
+                    <td>
+                        <c:out value="${gameDTO.firstPlayerNameEn}"/>
+                    </td>
+                    <td>
+                        <c:out value="${gameDTO.secondPlayerNameEn}"/>
+                    </td>
+                    <td>
+                        <c:out value="${gameDTO.scores}"/>
+                    </td>
+                    <td>
+                        <c:out value="${gameDTO.appealStage}"/>
+                    </td>
+                    <td>
+                        <form action="${pageContext.request.contextPath}/referee/gameDetailsReferee" method="post">
+                            <input type="hidden" name="gameid" value="${gameDTO.id}">
+                            <button class="button" type="submit">
+                                <fmt:message key="games.statistics.button.label.get"/>
+                            </button>
+                        </form>
+                    </td>
                 </tr>
-                </thead>
+            </c:forEach>
 
-                <tbody>
-                <c:forEach items="${gameDTOs}" var="gameDTO">
-                    <tr>
-                        <td>
-                            <c:out value="${gameDTO.date}"/>
-                        </td>
-                            <%--                    <td><span th:if="${lang.equals('en')}" th:text="${gameDTO.playerNameEn}"></span>--%>
-                            <%--                        <span th:if="${lang.equals('ua')}" th:text="${gameDTO.playerNameUa}"></span></td>--%>
-                            <%--                    <td><span th:if="${lang.equals('en')}" th:text="${gameDTO.opponentNameEn}"></span>--%>
-                            <%--                        <span th:if="${lang.equals('ua')}" th:text="${gameDTO.opponentNameUa}"></span></td>--%>
-                        <td>
-                            <c:out value="${gameDTO.firstPlayerNameEn}"/>
-                        </td>
-                        <td>
-                            <c:out value="${gameDTO.secondPlayerNameEn}"/>
-                        </td>
-                        <td>
-                            <c:out value="${gameDTO.scores}"/>
-                        </td>
-                        <td>
-                            <c:out value="${gameDTO.appealStage}"/>
-                        </td>
-                        <td>
-                            <form action="${pageContext.request.contextPath}/referee/gameDetailsReferee" method="post">
-                                <input type="hidden" name="gameid" value="${gameDTO.id}">
-                                <button class="button" type="submit">
-                                    <fmt:message key="games.statistics.button.label.get"/>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                </c:forEach>
+            <%--                <tr th:each="gameDTO: ${gameDTOs}">--%>
+            <%--                    <td th:text="${gameDTO.date}"></td>--%>
+            <%--                    <td><span th:if="${lang.equals('en')}" th:text="${gameDTO.playerNameEn}"></span>--%>
+            <%--                        <span th:if="${lang.equals('ua')}" th:text="${gameDTO.playerNameUa}"></span></td>--%>
+            <%--                    <td><span th:if="${lang.equals('en')}" th:text="${gameDTO.opponentNameEn}"></span>--%>
+            <%--                        <span th:if="${lang.equals('ua')}" th:text="${gameDTO.opponentNameUa}"></span></td>--%>
+            <%--                    <td th:text="${gameDTO.scores}"></td>--%>
+            <%--                    <td th:text="${gameDTO.appealStage}"></td>--%>
+            <%--                    <td>--%>
+            <%--                        <a th:href="@{|/referee/games/${gameDTO.id}|}"--%>
+            <%--                           th:text="#{games.statistics.link.label.get}"></a>--%>
+            <%--                    </td>--%>
+            <%--                </tr>--%>
+            </tbody>
+        </table>
 
-                <%--                <tr th:each="gameDTO: ${gameDTOs}">--%>
-                <%--                    <td th:text="${gameDTO.date}"></td>--%>
-                <%--                    <td><span th:if="${lang.equals('en')}" th:text="${gameDTO.playerNameEn}"></span>--%>
-                <%--                        <span th:if="${lang.equals('ua')}" th:text="${gameDTO.playerNameUa}"></span></td>--%>
-                <%--                    <td><span th:if="${lang.equals('en')}" th:text="${gameDTO.opponentNameEn}"></span>--%>
-                <%--                        <span th:if="${lang.equals('ua')}" th:text="${gameDTO.opponentNameUa}"></span></td>--%>
-                <%--                    <td th:text="${gameDTO.scores}"></td>--%>
-                <%--                    <td th:text="${gameDTO.appealStage}"></td>--%>
-                <%--                    <td>--%>
-                <%--                        <a th:href="@{|/referee/games/${gameDTO.id}|}"--%>
-                <%--                           th:text="#{games.statistics.link.label.get}"></a>--%>
-                <%--                    </td>--%>
-                <%--                </tr>--%>
-                </tbody>
-            </table>
+        <!--pagination-->
 
-            <!--pagination-->
-
-        </div>
     </div>
+</div>
 
-    <footer>
-        <h5>
-            <fmt:message key="text.footer"/>
-        </h5>
-    </footer>
+<footer>
+    <h5>
+        <fmt:message key="text.footer"/>
+    </h5>
+</footer>
 
 </body>
 

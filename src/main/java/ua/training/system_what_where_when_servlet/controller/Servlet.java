@@ -6,10 +6,10 @@ import ua.training.system_what_where_when_servlet.controller.command.LogoutComma
 import ua.training.system_what_where_when_servlet.controller.command.RegistrationCommand;
 import ua.training.system_what_where_when_servlet.controller.command.page.LoginPageCommand;
 import ua.training.system_what_where_when_servlet.controller.command.page.RegistrationPageCommand;
-import ua.training.system_what_where_when_servlet.controller.command.referee.GamesStatisticsRefereeCommand;
-import ua.training.system_what_where_when_servlet.controller.command.referee.GenerateNewGameRefereeCommand;
-import ua.training.system_what_where_when_servlet.controller.command.referee.HomeRefereeCommand;
-import ua.training.system_what_where_when_servlet.controller.command.referee.NewGamePrepareRefereeCommand;
+import ua.training.system_what_where_when_servlet.controller.command.player.GameDetailsPlayerCommand;
+import ua.training.system_what_where_when_servlet.controller.command.player.GamesStatisticsPlayerCommand;
+import ua.training.system_what_where_when_servlet.controller.command.player.HomePlayerCommand;
+import ua.training.system_what_where_when_servlet.controller.command.referee.*;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -48,16 +48,16 @@ public class Servlet extends HttpServlet {
                 new GenerateNewGameRefereeCommand());
         commands.put("gamesStatisticsReferee",
                 new GamesStatisticsRefereeCommand());
-//        commands.put("gameDetailsReferee",
-//                new GameDetailsRefereeCommand());
+        commands.put("gameDetailsReferee",
+                new GameDetailsRefereeCommand());
 //        commands.put("historyConsiderationReferee",
 //                new HistoryConsiderationRefereeCommand());
-//        commands.put("mainPlayer",
-//                new HomePlayerCommand());
-//        commands.put("gamesStatisticsPlayer",
-//                new GamesStatisticsPlayerCommand());
-//        commands.put("gameDetailsPlayer",
-//                new GameDetailsPlayerCommand());
+        commands.put("mainPlayer",
+                new HomePlayerCommand());
+        commands.put("gamesStatisticsPlayer",
+                new GamesStatisticsPlayerCommand());
+        commands.put("gameDetailsPlayer",
+                new GameDetailsPlayerCommand());
 //        commands.put("fileAppealFormPlayer",
 //                new FileAppealFormPlayerCommand());
 //        commands.put("fileAppealAgainstAnsweredQuestions",

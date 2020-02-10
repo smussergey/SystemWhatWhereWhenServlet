@@ -8,7 +8,7 @@
 <html>
 <head>
     <title>
-        <fmt:message key="games.game.details.page.title"/>
+        <fmt:message key="game.statistics.page.title"/>
     </title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -122,27 +122,27 @@
     <%--        </div>--%>
 
     <%--        <div th:if=" ${!gameDTOs.empty}" id="statistics">--%>
-    <div id="statistics">
+    <div id="details">
         <table class="table table-striped table-hover table-bordered table-sm">
             <h1>
-                <fmt:message key="games.game.details.table.caption"/>
+                <fmt:message key="game.statistics.table.caption"/>
             </h1>
             <thead class="thead-light">
             <tr>
                 <th>
-                    <fmt:message key="games.table.header.date"/>
+                    <fmt:message key="game.table.header.date"/>
                 </th>
                 <th>
-                    <fmt:message key="games.table.header.team"/>
+                    <fmt:message key="game.table.header.player"/>
                 </th>
                 <th>
-                    <fmt:message key="games.table.header.team"/>
+                    <fmt:message key="game.table.header.player"/>
                 </th>
                 <th>
-                    <fmt:message key="games.table.header.scores"/>
+                    <fmt:message key="game.table.header.scores"/>
                 </th>
                 <th>
-                    <fmt:message key="games.table.header.appeal.stage"/>
+                    <fmt:message key="game.table.header.appeal.stage"/>
                 </th>
             </tr>
             </thead>
@@ -156,10 +156,10 @@
             <%--                    <td><span th:if="${lang.equals('en')}" th:text="${gameDTO.opponentNameEn}"></span>--%>
             <%--                        <span th:if="${lang.equals('ua')}" th:text="${gameDTO.opponentNameUa}"></span></td>--%>
             <td>
-                ${gameDTO.playerNameEn}
+                ${gameDTO.firstPlayerNameEn}
             </td>
             <td>
-                ${gameDTO.opponentNameEn}
+                ${gameDTO.secondPlayerNameEn}
             </td>
             <td>
                 ${gameDTO.scores}
@@ -175,25 +175,25 @@
     <div id="qustions">
         <table class="table table-striped table-hover table-bordered table-sm">
             <h1>
-            <fmt:message key="games.game.questions.details.table.caption"/>
+                <fmt:message key="game.questions.table.caption"/>
             </h1>
             <thead class="thead-light">
             <tr>
                 <th>
-                    <fmt:message key="games.game.table.header.question.id"/>
+                    <fmt:message key="game.questions.table.header.question.id"/>
                 </th>
                 <th>
-                    <fmt:message key="games.game.table.header.name.who.got.point"/>
+                    <fmt:message key="game.questions.table.header.player.who.got.point"/>
                 </th>
                 <th>
-                    <fmt:message key="games.table.header.appeal.stage"/>
+                    <fmt:message key="game.questions.table.header.appeal.stage"/>
                 </th>
             </tr>
             </thead>
 
             <tbody>
 
-            <c:forEach items="${gameDTO.questionDTOS}" var="questionDTO">
+            <c:forEach items="${gameDTO.questionDTOs}" var="questionDTO">
                 <tr>
                     <td>
                         <c:out value="${questionDTO.id}"/>
@@ -220,7 +220,7 @@
                 <input type="hidden" name="gameid" value="${gameDTO.id}">
                     <%--            TODO improve--%>
                 <button class="button" type="submit">
-                    <fmt:message key="navbar.link.games.appeal"/>
+                    <fmt:message key="game.questions.button.label.appeal"/>
                 </button>
             </form>
         </div>

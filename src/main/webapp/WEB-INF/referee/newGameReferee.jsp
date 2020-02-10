@@ -125,9 +125,6 @@
                 <fmt:message key="game.new.field.label.second.player"/>
             </label>
             <select class="custom-select mb-3" id="opponent" name="secondplayerid">
-                <option value="0">
-                    <fmt:message key="game.new.field.label.second.player"/>
-                </option>
                 <%--                <option th:if="${lang.equals('en')}"--%>
                 <%--                        th:each="player : ${players}"--%>
                 <%--                        th:value="${player.id}" th:text="${player.nameEn}">--%>

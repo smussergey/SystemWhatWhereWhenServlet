@@ -2,15 +2,19 @@ package ua.training.system_what_where_when_servlet.service;
 
 import org.apache.log4j.Logger;
 import ua.training.system_what_where_when_servlet.dao.DaoFactory;
+import ua.training.system_what_where_when_servlet.dao.GameDao;
 import ua.training.system_what_where_when_servlet.dto.GameDTO;
 import ua.training.system_what_where_when_servlet.entity.Appeal;
 import ua.training.system_what_where_when_servlet.entity.AppealStage;
 import ua.training.system_what_where_when_servlet.entity.Game;
 import ua.training.system_what_where_when_servlet.entity.User;
+import ua.training.system_what_where_when_servlet.entity.exception.EntityNotFoundException;
 import ua.training.system_what_where_when_servlet.util.ResourceBundleUtil;
 
+import java.util.List;
+
 public class GameService {
-    private static final Logger LOGGER = Logger.getLogger(UserService.class);
+    private static final Logger LOGGER = Logger.getLogger(GameService.class);
     private static final String DELIMITER = ":";
     private DaoFactory daoFactory = DaoFactory.getInstance();
 
@@ -28,14 +32,34 @@ public class GameService {
 //                .orElseThrow(() -> new EntityNotFoundException("Can not fond game with id: " + id));
 //    }
 
+    public Game findById(Integer id) {
+        GameDao gameDao = daoFactory.createGameDao();
+        LOGGER.info(String.format("In findById method id=%s", id));
+        Game game = gameDao.findById(id).orElseThrow(() -> new EntityNotFoundException("Can not fond game with id: " + id));
+        LOGGER.info(String.format("In findById method game was found with id=%s", game.getId()));
+        return game;
+    }
+
+
 //    public Page<Game> findAllByFirstPlayerOrSecondPlayer(User firstPlayer, User secondPlayer, Pageable pageable) {
 //        return gameRepository.findAllByFirstPlayerOrSecondPlayer(firstPlayer, secondPlayer, pageable);
 //    }
 
+    public List<Game> findAllByFirstPlayerOrSecondPlayer(User firstPlayer, User secondPlayer) {
+        GameDao gameDao = daoFactory.createGameDao();
+        return gameDao.findAllByFirstPlayerOrSecondPlayer(firstPlayer, secondPlayer);
+    }
+
 //    public Page<Game> findAll(Pageable pageable) {
 //        return gameRepository.findAll(pageable);
 //    }
-//
+
+    public List<Game> findAll() {
+        GameDao gameDao = daoFactory.createGameDao();
+        return gameDao.findAll();
+    }
+
+
 //    public Page<Game> findAllByDateAfter(LocalDate localDate, Pageable pageable) {
 //        return gameRepository.findAllByDateBefore(localDate, pageable);
 //    }
@@ -46,7 +70,7 @@ public class GameService {
 //    }
 
     public void save(Game game) {
-            daoFactory.createGameDao().create(game);
+        daoFactory.createGameDao().create(game);
     }
 
 //    @Transactional

@@ -12,7 +12,6 @@ import ua.training.system_what_where_when_servlet.entity.exception.EntityNotFoun
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class UserService {
     private static final Logger LOGGER = Logger.getLogger(UserService.class);
@@ -75,8 +74,8 @@ public class UserService {
 
     public void save(User user) {
         LOGGER.info("In method save user : " + user.getEmail());
-            daoFactory.createUserDao().create(user);
-        }
+        daoFactory.createUserDao().create(user);
+    }
 //        LOGGER.info(String.format("User with email %s was saved", user.getEmail()));
 //        return 0;
 
@@ -104,15 +103,9 @@ public class UserService {
 //        return userOptional;
 //    }
 //
-    public Optional<User> findByUsername(String username) {
-        Optional<User> userOptional = Optional.empty();
-
-        try (UserDao userDao = daoFactory.createUserDao()) {
-            userOptional = userDao.findByUserName(username);
-        } catch (Exception e) {
-            e.printStackTrace(); //TODO Correct
-        }
-        return userOptional;
+    public User findByUsername(String username) {
+        UserDao userDao = daoFactory.createUserDao();
+        return userDao.findByUserName(username).orElseThrow(() -> new EntityNotFoundException(String.format("User with username: %s not found", username)));
     }
 
 

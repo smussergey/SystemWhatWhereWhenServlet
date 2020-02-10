@@ -82,7 +82,7 @@
                 <input type="text"
                        class="form-control"
                        id="username"
-                       value="ad"
+                       value="us"
                        name="username"
                        value='<fmt:message key="login.field.placeholder.login"/>'>
             </div>
@@ -94,7 +94,7 @@
                 <input type="password"
                        class="form-control"
                        id="password"
-                       value="adpas"
+                       value="uspas"
                        name="password"
                        value='<fmt:message key="login.field.placeholder.password"/>'>
             </div>
