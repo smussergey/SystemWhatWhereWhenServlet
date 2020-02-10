@@ -8,7 +8,7 @@
 <html>
 <head>
     <title>
-        <fmt:message key="games.game.new.page.title"/>
+        <fmt:message key="game.new.page.title"/>
     </title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">

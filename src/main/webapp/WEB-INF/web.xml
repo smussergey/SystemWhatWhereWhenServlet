@@ -6,17 +6,17 @@
 
     <display-name>Archetype Created Web Application</display-name>
     <servlet>
-        <servlet-name>Servlet</servlet-name>
-        <servlet-class>ua.training.system_what_where_when_servlet.controller.Servlet</servlet-class>
+        <servlet-name>MainServlet</servlet-name>
+        <servlet-class>ua.training.game.web.MainServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>Servlet</servlet-name>
+        <servlet-name>MainServlet</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 
     <filter>
         <filter-name>LocaleFilter</filter-name>
-        <filter-class>ua.training.system_what_where_when_servlet.controller.filter.LocaleFilter</filter-class>
+        <filter-class>ua.training.game.web.filter.LocaleFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>LocaleFilter</filter-name>
@@ -25,7 +25,7 @@
 
     <filter>
         <filter-name>EncodingFilter</filter-name>
-        <filter-class>ua.training.system_what_where_when_servlet.controller.filter.EncodingFilter</filter-class>
+        <filter-class>ua.training.game.web.filter.EncodingFilter</filter-class>
         <init-param>
             <param-name>encoding</param-name>
             <param-value>UTF-8</param-value>
@@ -38,7 +38,7 @@
 
     <filter>
         <filter-name>AuthFilter</filter-name>
-        <filter-class>ua.training.system_what_where_when_servlet.controller.filter.AuthFilter</filter-class>
+        <filter-class>ua.training.game.web.filter.AuthFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>AuthFilter</filter-name>
@@ -48,7 +48,7 @@
 
     <listener>
         <listener-class>
-            ua.training.system_what_where_when_servlet.controller.listener.SessionListener
+            ua.training.game.web.listener.SessionListener
         </listener-class>
     </listener>
 
