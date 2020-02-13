@@ -11,6 +11,7 @@ import ua.training.game.exception.EntityNotFoundException;
 import ua.training.game.util.ResourceBundleUtil;
 import ua.training.game.web.dto.GameDTO;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class GameService {
@@ -63,6 +64,11 @@ public class GameService {
 //    public Page<Game> findAllByDateAfter(LocalDate localDate, Pageable pageable) {
 //        return gameRepository.findAllByDateBefore(localDate, pageable);
 //    }
+
+        public List<Game> findAllByDateBefore(LocalDate localDate) {
+        return daoFactory.createGameDao().findAllByDateBefore(localDate);
+    }
+
 
 //    @Transactional
 //    public Game save(Game game) {

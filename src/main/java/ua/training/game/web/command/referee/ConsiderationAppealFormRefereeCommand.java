@@ -1,4 +1,4 @@
-package ua.training.system_what_where_when_servlet.controller.command.referee;
+package ua.training.game.web.command.referee;
 
 import org.apache.log4j.Logger;
 import ua.training.game.enums.AppealStage;

@@ -8,8 +8,7 @@ import ua.training.game.web.command.page.LoginPageCommand;
 import ua.training.game.web.command.page.RegistrationPageCommand;
 import ua.training.game.web.command.player.*;
 import ua.training.game.web.command.referee.*;
-import ua.training.system_what_where_when_servlet.controller.command.referee.ConsiderAppealAgainstAppealedQuestionsRefereeCommand;
-import ua.training.system_what_where_when_servlet.controller.command.referee.ConsiderationAppealFormRefereeCommand;
+
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -50,8 +49,6 @@ public class MainServlet extends HttpServlet {
                 new GamesStatisticsRefereeCommand());
         commands.put("gameDetailsReferee",
                 new GameDetailsRefereeCommand());
-//        commands.put("historyConsiderationReferee",
-//                new HistoryConsiderationRefereeCommand());
         commands.put("mainPlayer",
                 new HomePlayerCommand());
         commands.put("gamesStatisticsPlayer",
@@ -66,12 +63,12 @@ public class MainServlet extends HttpServlet {
                 new ConsiderationAppealFormRefereeCommand());
         commands.put("considerAppealAgainstAnsweredQuestions",
                 new ConsiderAppealAgainstAppealedQuestionsRefereeCommand());
-//        commands.put("historyGamesStatistics",
-//                new HistoryGamesStatisticsRefereeCommand());
-//        commands.put("historyConsiderationReferee",
-//                new HistoryConsiderationRefereeCommand());
-//        commands.put("moveToHistory",
-//                new MoveToHistoryRefereeCommand());
+        commands.put("historyGamesStatistics",
+             new HistoryGamesStatisticsRefereeCommand());
+        commands.put("historyConsiderationReferee",
+                new HistoryConsiderationRefereeCommand());
+        commands.put("moveToHistory",
+                new MoveToHistoryRefereeCommand());
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {

@@ -1,8 +1,8 @@
-//package ua.training.system_what_where_when_servlet.dao;
-//
-//import ua.training.system_what_where_when_servlet.entity.Game;
-//import ua.training.system_what_where_when_servlet.entity.History;
-//
-//public interface HistoryDao extends GenericDao<History> {
-//    void createAndDeleteGameRecords(History history, Game game);
-//}
+package ua.training.game.dao;
+
+import ua.training.game.domain.Game;
+import ua.training.game.domain.History;
+
+public interface HistoryDao extends GenericDao<History> {
+    void createAndDeleteGameRecord(History history, Game game);
+}

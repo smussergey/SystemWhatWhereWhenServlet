@@ -1,4 +1,4 @@
-package ua.training.system_what_where_when_servlet.controller.command.referee;
+package ua.training.game.web.command.referee;
 
 import org.apache.log4j.Logger;
 import ua.training.game.service.AppealService;
@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 
 public class ConsiderAppealAgainstAppealedQuestionsRefereeCommand implements Command {
-    private static final Logger LOGGER = Logger.getLogger(ua.training.system_what_where_when_servlet.controller.command.referee.ConsiderAppealAgainstAppealedQuestionsRefereeCommand.class);
+    private static final Logger LOGGER = Logger.getLogger(ConsiderAppealAgainstAppealedQuestionsRefereeCommand.class);
     private final AppealService appealService = new AppealService();
 
     @Override

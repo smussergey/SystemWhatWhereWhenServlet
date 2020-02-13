@@ -29,10 +29,10 @@ public class JDBCDaoFactory extends DaoFactory {
         return new JDBCAppealDao();
     }
 
-    //    @Override
-//    public HistoryDao createHistoryDao() {
-//        return new JDBCHistoryDaoImpl(getConnection());
-//    }
-//
+        @Override
+    public HistoryDao createHistoryDao() {
+        return new JDBCHistoryDao();
+    }
+
 
 }

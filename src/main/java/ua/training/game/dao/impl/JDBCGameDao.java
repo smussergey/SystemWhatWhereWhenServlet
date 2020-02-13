@@ -5,7 +5,6 @@ import ua.training.game.dao.GameDao;
 import ua.training.game.dao.connection.ConnectionPoolHolder;
 import ua.training.game.dao.mapper.*;
 import ua.training.game.domain.*;
-import ua.training.game.enums.AppealStage;
 import ua.training.game.exception.EntityNotFoundException;
 
 import java.sql.Date;
@@ -347,177 +346,95 @@ public class JDBCGameDao implements GameDao {
             return new ArrayList<>(games.values());
         }
 
+    @Override //TODO rename method find by player
+    public List<Game> findAllByDateBefore(LocalDate date) {
+        Map<Integer, Question> questions = new HashMap<>();
+        Map<Integer, Appeal> appeals = new HashMap<>();
+        Map<Integer, Game> games = new HashMap<>();
+        Map<Integer, User> users = new HashMap<>();
 
-        @Override
-        public List<Game> findAllByUsername (String username){
-//        Map<Integer, Question> answeredQuestions = new HashMap<>();
-//        Map<Integer, Appeal> appeals = new HashMap<>();
-//        Map<Integer, Game> games = new HashMap<>();
-//        Map<Integer, User> users = new HashMap<>();
-//
-//
-//        Optional<Game> result = Optional.empty();
-//        try (PreparedStatement ps = connection.prepareStatement("" +
-//                " select * from user " +
-//                " left join user_game " +
-//                " on  user.user_id = user_game.user_id " +
-//                " left join game " +
-//                " on user_game.game_id = game.game_id " +
-//                " left join answered_question " +
-//                " on game.game_id = answered_question.game_id " +
-//                " left join appeal " +
-//                " on answered_question.appeal_id = appeal.appeal_id " +
-//                " where user.email = ?")) {
-//
-//            ps.setString(1, username);
-//            ResultSet rs;
-//
-//            rs = ps.executeQuery();
-//
-//            AnsweredQuestionMapper answeredQuestionMapper = new AnsweredQuestionMapper();
-//            AppealMapper appealMapper = new AppealMapper();
-//            GameMapper gameMapper = new GameMapper();
-//            UserMapper userMapper = new UserMapper();
-//
-//            while (rs.next()) {
-//                Game game = gameMapper
-//                        .extractFromResultSet(rs);
-//                game = gameMapper
-//                        .makeUnique(games, game);
-//
-//                User user = userMapper
-//                        .extractFromResultSet(rs);
-//                user = userMapper
-//                        .makeUnique(users, user);
-//
-//
-//                Appeal appeal = null;
-//
-//                if (rs.getInt("appeal.appeal_id") > 0) {
-//                    appeal = appealMapper
-//                            .extractFromResultSet(rs);
-//                    appeal = appealMapper
-//                            .makeUnique(appeals, appeal);
-//                    if (rs.getInt("appeal.user_id") == rs.getInt("user.user_id")) {
-//                        appeal.setUser(user);
-//                    }
-//                    game.getAppeals().add(appeal);
-//                }
-//
-//                Question question = answeredQuestionMapper
-//                        .extractFromResultSet(rs);
-//                question = answeredQuestionMapper
-//                        .makeUnique(answeredQuestions, question);
-//                question.setGame(game);
-//                if (rs.getInt("answered_question.user_id") > 0)
-//                    question.setUserWhoGotPoint(users.get(rs.getInt("answered_question.user_id")));
-//                if (rs.getInt("answered_question.appeal_id") > 0)
-//                    question.setAppeal(appeal);
-//
-//                if (game.getQuestions().contains(question)) {
-//                } else {
-//                    game.getQuestions().add(question);
-//                }
-////                game.getAnsweredQuestions().add(answeredQuestion);
-//
-//                if (game.getUsers().contains(user)) {
-//                } else {
-//                    game.getUsers().add(user);
-//                }
-//            }
-//        } catch (SQLException ex) {
-//            LOGGER.error("Exception in class: UserDaoImpl, method: findById.", ex);
-//            throw new RuntimeException(ex); //TODO Correct
-//        }
-//        return new ArrayList<>(games.values());
-            return null; //TODO Correct
-        }
+        try (Connection connection = ConnectionPoolHolder.getConnection();
+             PreparedStatement ps = connection.prepareStatement("" +
+                     "SELECT * FROM game " +
+                     " left join user as us1 " +
+                     " on game.first_player_user_id = us1.user_id " +
+                     " left join user as us2 " +
+                     " on game.second_player_user_id = us2.user_id " +
+                     " left join question " +
+                     " on game.game_id = question.game_id " +
+                     " left join appeal " +
+                     " on game.game_id = appeal.game_id " +
+                     " where game.date < ?")) {
 
-        //TODO implement query for date too
-        @Override
-        public List<Game> findAllByAppealStageAndDateLaterThan (AppealStage appealStage, LocalDate localDate){
-//        Map<Integer, Question> answeredQuestions = new HashMap<>();
-//        Map<Integer, Appeal> appeals = new HashMap<>();
-//        Map<Integer, Game> games = new HashMap<>();
-//        Map<Integer, User> users = new HashMap<>();
-//
-//
-//        Optional<Game> result = Optional.empty();
-//        try (PreparedStatement ps = connection.prepareStatement("" +
-//                " select * from user " +
-//                " left join user_game " +
-//                " on  user.user_id = user_game.user_id " +
-//                " left join game " +
-//                " on user_game.game_id = game.game_id " +
-//                " left join answered_question " +
-//                " on game.game_id = answered_question.game_id " +
-//                " left join appeal " +
-//                " on answered_question.appeal_id = appeal.appeal_id " +
-//                " where appeal.appeal_stage = ?")) {
-//
-//            ps.setString(1, appealStage.name());
-//            ResultSet rs;
-//
-//            rs = ps.executeQuery();
-//
-//            AnsweredQuestionMapper answeredQuestionMapper = new AnsweredQuestionMapper();
-//            AppealMapper appealMapper = new AppealMapper();
-//            GameMapper gameMapper = new GameMapper();
-//            UserMapper userMapper = new UserMapper();
-//
-//            while (rs.next()) {
-//                Game game = gameMapper
-//                        .extractFromResultSet(rs);
-//                game = gameMapper
-//                        .makeUnique(games, game);
-//
-//                User user = userMapper
-//                        .extractFromResultSet(rs);
-//                user = userMapper
-//                        .makeUnique(users, user);
-//
-//
-//                Appeal appeal = null;
-//
-//                if (rs.getInt("appeal.appeal_id") > 0) {
-//                    appeal = appealMapper
-//                            .extractFromResultSet(rs);
-//                    appeal = appealMapper
-//                            .makeUnique(appeals, appeal);
-//                    if (rs.getInt("appeal.user_id") == rs.getInt("user.user_id")) {
-//                        appeal.setUser(user);
-//                    }
+            ps.setDate(1, Date.valueOf(date));
+            ResultSet rs = ps.executeQuery();
+
+            QuestionMapper questionMapper = new QuestionMapper();
+            AppealMapper appealMapper = new AppealMapper();
+            GameMapper gameMapper = new GameMapper();
+            UserMapper userMapper = new UserMapper();
+
+            while (rs.next()) {
+                Game game = gameMapper
+                        .extractFromResultSet(rs);
+                game = gameMapper
+                        .makeUnique(games, game);
+
+                User firstPlayer = userMapper
+                        .extractFromResultSetForFirstPlayer(rs);
+                firstPlayer = userMapper
+                        .makeUnique(users, firstPlayer);
+
+                game.setFirstPlayer(firstPlayer);
+
+                User secondPlayer = userMapper
+                        .extractFromResultSetForSecondPlayer(rs);
+                secondPlayer = userMapper
+                        .makeUnique(users, secondPlayer);
+
+                game.setSecondPlayer(secondPlayer);
+
+                Appeal appeal = null;
+
+                if (rs.getInt("appeal.appeal_id") > 0) {
+                    appeal = appealMapper
+                            .extractFromResultSet(rs);
+                    appeal = appealMapper
+                            .makeUnique(appeals, appeal);
+                    appeal.setUser(users.get(rs.getInt("appeal.user_id")));
+                    appeal.setGame(games.get(rs.getInt("appeal.game_id"))); // TODO check whether it is needed
+
+
+                    if (game.getAppeals().contains(appeal)) {
+                    } else {
+                        game.getAppeals().add(appeal);
+                    }
+
+
 //                    game.getAppeals().add(appeal);
-//                }
-//
-//                Question question = answeredQuestionMapper
-//                        .extractFromResultSet(rs);
-//                question = answeredQuestionMapper
-//                        .makeUnique(answeredQuestions, question);
-//                question.setGame(game);
-//                if (rs.getInt("answered_question.user_id") > 0)
-//                    question.setUserWhoGotPoint(users.get(rs.getInt("answered_question.user_id")));
-//                if (rs.getInt("answered_question.appeal_id") > 0)
-//                    question.setAppeal(appeal);
-//
-//                if (game.getQuestions().contains(question)) {
-//                } else {
-//                    game.getQuestions().add(question);
-//                }
-////                game.getAnsweredQuestions().add(answeredQuestion);
-//
-//                if (game.getUsers().contains(user)) {
-//                } else {
-//                    game.getUsers().add(user);
-//                }
-//            }
-//        } catch (SQLException ex) {
-//            LOGGER.error("Exception in class: GameDaoImpl, method: findAllByAppealStageAndDateLaterThan.", ex);
-//            throw new RuntimeException(ex); //TODO Correct
-//        }
-//        return new ArrayList<>(games.values());
-            return null; //TODO Correct
+                }
+
+                Question question = questionMapper
+                        .extractFromResultSet(rs);
+                question = questionMapper
+                        .makeUnique(questions, question);
+                question.setGame(game);
+                question.setUserWhoGotPoint(users.get(rs.getInt("question.user_id")));
+
+
+                if (game.getQuestions().contains(question)) {
+                } else {
+                    game.getQuestions().add(question);
+                }
+            }
+        } catch(SQLException ex){
+            LOGGER.error(ex.getMessage());
+            throw new RuntimeException(ex); //TODO check
         }
+        return new ArrayList<>(games.values());
+    }
+
+
 
         @Override
         public void update (Game entity){

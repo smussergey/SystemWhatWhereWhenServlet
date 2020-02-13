@@ -52,20 +52,20 @@
                     <fmt:message key="navbar.link.games.new"/>
                 </a>
             </li>
-            <li class="nav-item">
-                <%--                <a class="nav-link" th:href="@{/referee/games/statistics}"--%>
-                <%--                   th:text="#{navbar.link.games.statistics}"></a>--%>
-                <a class="nav-link" href="${pageContext.request.contextPath}/referee/gamesStatisticsReferee">
-                    <fmt:message key="navbar.link.games.statistics"/>
-                </a>
-            </li>
-            <li class="nav-item">
-                <%--                <a class="nav-link" th:href="@{/referee/history/consideration}"--%>
-                <%--                   th:text="#{navbar.link.history.consideration}"></a>--%>
-                <a class="nav-link" href="${pageContext.request.contextPath}/referee/historyGamesStatistics">
-                    <fmt:message key="navbar.link.history.games"/>
-                </a>
-            </li>
+<%--            <li class="nav-item">--%>
+<%--                &lt;%&ndash;                <a class="nav-link" th:href="@{/referee/games/statistics}"&ndash;%&gt;--%>
+<%--                &lt;%&ndash;                   th:text="#{navbar.link.games.statistics}"></a>&ndash;%&gt;--%>
+<%--                <a class="nav-link" href="${pageContext.request.contextPath}/referee/gamesStatisticsReferee">--%>
+<%--                    <fmt:message key="navbar.link.games.statistics"/>--%>
+<%--                </a>--%>
+<%--            </li>--%>
+<%--            <li class="nav-item">--%>
+<%--                &lt;%&ndash;                <a class="nav-link" th:href="@{/referee/history/consideration}"&ndash;%&gt;--%>
+<%--                &lt;%&ndash;                   th:text="#{navbar.link.history.consideration}"></a>&ndash;%&gt;--%>
+<%--                <a class="nav-link" href="${pageContext.request.contextPath}/referee/historyGamesStatistics">--%>
+<%--                    <fmt:message key="navbar.link.history.statistics"/>--%>
+<%--                </a>--%>
+<%--            </li>--%>
         </ul>
         <ul class="navbar-nav my-2 my-lg-0">
             <li class="nav-item">

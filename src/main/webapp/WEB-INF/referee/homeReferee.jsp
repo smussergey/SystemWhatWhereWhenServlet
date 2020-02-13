@@ -56,7 +56,7 @@
                 <%--                <a class="nav-link" th:href="@{/referee/history/consideration}"--%>
                 <%--                   th:text="#{navbar.link.history.consideration}"></a>--%>
                 <a class="nav-link" href="${pageContext.request.contextPath}/referee/historyGamesStatistics">
-                    <fmt:message key="navbar.link.history.games"/>
+                    <fmt:message key="navbar.link.history.statistics"/>
                 </a>
             </li>
         </ul>

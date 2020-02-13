@@ -8,7 +8,7 @@
 <html>
 <head>
     <title>
-        <fmt:message key="games.history.page.title"/>
+        <fmt:message key="game.history.page.title"/>
     </title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -57,7 +57,7 @@
                 <%--                <a class="nav-link" th:href="@{/referee/history/consideration}"--%>
                 <%--                   th:text="#{navbar.link.history.consideration}"></a>--%>
                 <a class="nav-link" href="${pageContext.request.contextPath}/referee/historyGamesStatistics">
-                    <fmt:message key="navbar.link.history.games"/>
+                    <fmt:message key="navbar.link.history.statistics"/>
                 </a>
             </li>
         </ul>
@@ -108,27 +108,27 @@
     <div>
         <table class="table table-striped table-hover table-bordered table-sm">
             <h1>
-                <fmt:message key="games.statistics.table.caption"/>
+                <fmt:message key="game.history.table.caption.move.to.history"/>
             </h1>
             <thead class="thead-light">
             <tr>
                 <th>
-                    <fmt:message key="games.table.header.date"/>
+                    <fmt:message key="game.table.header.date"/>
                 </th>
                 <th>
-                    <fmt:message key="games.table.header.team"/>
+                    <fmt:message key="game.table.header.player"/>
                 </th>
                 <th>
-                    <fmt:message key="games.table.header.team"/>
+                    <fmt:message key="game.table.header.player"/>
                 </th>
                 <th>
-                    <fmt:message key="games.table.header.scores"/>
+                    <fmt:message key="game.table.header.scores"/>
                 </th>
                 <th>
-                    <fmt:message key="games.table.header.appeal.stage"/>
+                    <fmt:message key="game.table.header.appeal.stage"/>
                 </th>
                 <th>
-                    <fmt:message key="games.history.move.to.table.header"/>
+                    <fmt:message key="game.history.table.header.move"/>
                 </th>
             </tr>
             </thead>
@@ -144,10 +144,10 @@
                         <%--                    <td><span th:if="${lang.equals('en')}" th:text="${gameDTO.opponentNameEn}"></span>--%>
                         <%--                        <span th:if="${lang.equals('ua')}" th:text="${gameDTO.opponentNameUa}"></span></td>--%>
                     <td>
-                        <c:out value="${gameDTO.playerNameEn}"/>
+                        <c:out value="${gameDTO.firstPlayerNameEn}"/>
                     </td>
                     <td>
-                        <c:out value="${gameDTO.opponentNameEn}"/>
+                        <c:out value="${gameDTO.secondPlayerNameEn}"/>
                     </td>
                     <td>
                         <c:out value="${gameDTO.scores}"/>
@@ -159,7 +159,7 @@
                         <form action="${pageContext.request.contextPath}/referee/moveToHistory" method="post">
                             <input type="hidden" name="gameid" value="${gameDTO.id}">
                             <button class="button" type="submit">
-                                <fmt:message key="games.history.button.label.move.to"/>
+                                <fmt:message key="game.history.button.label.move"/>
                             </button>
                         </form>
                     </td>

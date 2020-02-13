@@ -24,6 +24,6 @@ public abstract class DaoFactory {
     public abstract GameDao createGameDao();
     public abstract QuestionDao createQuestionDao();
     public abstract AppealDao createAppealDao();
-//    public abstract HistoryDao createHistoryDao();
+    public abstract HistoryDao createHistoryDao();
 
 }
