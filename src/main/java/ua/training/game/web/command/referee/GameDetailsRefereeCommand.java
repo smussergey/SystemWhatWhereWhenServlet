@@ -1,12 +1,12 @@
 package ua.training.game.web.command.referee;
 
-        import org.apache.log4j.Logger;
-import ua.training.game.web.command.Command;
-import ua.training.game.web.dto.GameDTO;
+import org.apache.log4j.Logger;
 import ua.training.game.enums.AppealStage;
 import ua.training.game.exception.EntityNotFoundException;
 import ua.training.game.service.GameInformationService;
 import ua.training.game.util.ResourceBundleUtil;
+import ua.training.game.web.command.Command;
+import ua.training.game.web.dto.GameDTO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

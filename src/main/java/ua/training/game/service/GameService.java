@@ -3,13 +3,13 @@ package ua.training.game.service;
 import org.apache.log4j.Logger;
 import ua.training.game.dao.DaoFactory;
 import ua.training.game.dao.GameDao;
-import ua.training.game.web.dto.GameDTO;
 import ua.training.game.domain.Appeal;
-import ua.training.game.enums.AppealStage;
 import ua.training.game.domain.Game;
 import ua.training.game.domain.User;
+import ua.training.game.enums.AppealStage;
 import ua.training.game.exception.EntityNotFoundException;
 import ua.training.game.util.ResourceBundleUtil;
+import ua.training.game.web.dto.GameDTO;
 
 import java.util.List;
 
@@ -87,14 +87,13 @@ public class GameService {
         gameDTO.setFirstPlayerNameEn(game.getFirstPlayer().getNameEn());
         gameDTO.setSecondPlayerNameUa(game.getSecondPlayer().getNameUa());
         gameDTO.setSecondPlayerNameEn(game.getSecondPlayer().getNameEn());
-        gameDTO.setScores(createScoresResults(game));
-        gameDTO.setAppealStage(ResourceBundleUtil.getBundleStringForAppealStage(getAppealStageForGame(game).name()));
-//                .isAppealPossible(true)// TODO check if it is needed
+        gameDTO.setScores(createScoresResultsForGameDTO(game));
+        gameDTO.setAppealStage(ResourceBundleUtil.getBundleStringForAppealStage(createAppealStageForGameDTO(game).name()));
         return gameDTO;
     }
 
 
-    public String createScoresResults(Game game) {
+    public String createScoresResultsForGameDTO(Game game) {
         User firstPlayer = game.getFirstPlayer();
 
         long firstPlayerScores = game.getQuestions()
@@ -107,7 +106,7 @@ public class GameService {
         return firstPlayerScores + DELIMITER + secondPlayerScores;
     }
 
-    public AppealStage getAppealStageForGame(Game game) {
+    public AppealStage createAppealStageForGameDTO(Game game) {
         return game.getAppeals().stream()
                 .map(Appeal::getAppealStage)
                 .findFirst()

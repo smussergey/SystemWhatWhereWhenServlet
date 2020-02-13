@@ -1,10 +1,10 @@
 package ua.training.game.web.command.player;
 
 import org.apache.log4j.Logger;
-import ua.training.game.web.command.Command;
-import ua.training.game.web.dto.GameDTO;
 import ua.training.game.exception.EntityNotFoundException;
 import ua.training.game.service.AppealService;
+import ua.training.game.web.command.Command;
+import ua.training.game.web.dto.GameDTO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

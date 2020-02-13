@@ -1,9 +1,9 @@
 package ua.training.game.service;
 
 import org.apache.log4j.Logger;
-import ua.training.game.web.dto.GameDTO;
 import ua.training.game.domain.Game;
 import ua.training.game.domain.User;
+import ua.training.game.web.dto.GameDTO;
 
 import java.time.LocalDate;
 import java.util.Comparator;

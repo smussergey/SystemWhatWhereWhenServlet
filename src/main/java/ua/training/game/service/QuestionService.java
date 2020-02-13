@@ -2,12 +2,12 @@ package ua.training.game.service;
 
 import org.apache.log4j.Logger;
 import ua.training.game.dao.DaoFactory;
-import ua.training.game.web.dto.QuestionDTO;
-import ua.training.game.enums.AppealStage;
 import ua.training.game.domain.Game;
 import ua.training.game.domain.Question;
+import ua.training.game.enums.AppealStage;
 import ua.training.game.exception.EntityNotFoundException;
 import ua.training.game.util.ResourceBundleUtil;
+import ua.training.game.web.dto.QuestionDTO;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -69,10 +69,10 @@ public class QuestionService {
                                         .name()))));
     }
 
-//    @Transactional
-//    public List<Question> saveAll(List<Question> questions) {
-//        return questionRepository.saveAll(questions);
-//    }
+
+    public void update(List<Question> questions) {
+       DaoFactory.getInstance().createQuestionDao().update(questions);
+    }
 }
 
 

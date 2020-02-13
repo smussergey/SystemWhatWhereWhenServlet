@@ -134,7 +134,7 @@
                     <fmt:message key="game.table.header.appeal.stage"/>
                 </th>
                 <th>
-                    <fmt:message key="games.table.header.get.game.statistics"/>
+                    <fmt:message key="games.table.header.get.game.details"/>
                 </th>
             </tr>
             </thead>
@@ -162,7 +162,7 @@
                         <c:out value="${gameDTO.appealStage}"/>
                     </td>
                     <td>
-                        <form action="${pageContext.request.contextPath}/referee/gameDetailsReferee" method="post">
+                        <form action="${pageContext.request.contextPath}/referee/gameDetailsReferee" method="get">
                             <input type="hidden" name="gameid" value="${gameDTO.id}">
                             <button class="button" type="submit">
                                 <fmt:message key="games.statistics.button.label.get"/>

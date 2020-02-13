@@ -2,11 +2,11 @@ package ua.training.game.service;
 
 import org.apache.log4j.Logger;
 import ua.training.game.dao.DaoFactory;
+import ua.training.game.domain.*;
 import ua.training.game.enums.AppealStage;
+import ua.training.game.exception.EntityNotFoundException;
 import ua.training.game.web.dto.GameDTO;
 import ua.training.game.web.dto.QuestionDTO;
-import ua.training.game.domain.*;
-import ua.training.game.exception.EntityNotFoundException;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -74,24 +74,14 @@ public class AppealService {
     }
 
 
-//    public GameDTO getGameInformationByIdForApprovalToAppealForm(Long gameId) {
-//        Game appealedGame = gameService.findById(gameId);
-//        GameDTO gameDTO = gameService.toGameDTO(appealedGame);
-//        gameDTO.setQuestionDTOs(questionService.extractQuestionDTOsFromGame(appealedGame));
-//
-//        return gameDTO;
-//
-//    }
-//
-
     //
 //
     public void fileAppealAgainstGameQuestions(int[] questionsThatWereAppealedIds, String username) {
         LOGGER.info("in fileAppealAgainstGameQuestions() -qustions ids  successfully were got");
         List<Question> questionsThatWereAppealed = Arrays.stream(questionsThatWereAppealedIds)
-                .peek(id-> System.out.println("----------------------id=" + id))
+                .peek(id -> System.out.println("----------------------id=" + id))
                 .mapToObj(questionService::findById) // TODO improve this method: too many calls to db (use "IN")
-                .peek(question-> System.out.println("----------------------question.id=" + question.getId()))
+                .peek(question -> System.out.println("----------------------question.id=" + question.getId()))
                 .collect(Collectors.toList());
 
         Game appealedGame = getAppealedGame(questionsThatWereAppealed);
@@ -110,10 +100,11 @@ public class AppealService {
     }
 
     private Game getAppealedGame(List<Question> appealedQuestions) {
-        return appealedQuestions.stream()
+        Integer appealedGameId = appealedQuestions.stream()
                 .findAny()
                 .orElseThrow(() -> new EntityNotFoundException("In getAppealedGame: Can not fond game with any appealedQuestions"))
-                .getGame();
+                .getGame().getId();
+        return gameService.findById(appealedGameId);
     }
 
     private List<AppealedQuestion> getAppealedQuestions(List<Question> questions, Appeal appeal) {
@@ -133,61 +124,83 @@ public class AppealService {
     }
 
 
+//        public GameDTO getGameInformationByIdForApprovalToAppealForm(Long gameId) {
+//        Game appealedGame = gameService.findById(gameId);
+//        GameDTO gameDTO = gameService.toGameDTO(appealedGame);
+//        gameDTO.setQuestionDTOs(questionService.extractQuestionDTOsFromGame(appealedGame));
 //
-//    public void approveAppealsAgainstGameAnsweredQuestions(long[] approvedQuestionIds) {
-//        log.info("in approveAppealAgainstGameAnsweredQuestions() - id []: {} successfully was got", approvedQuestionIds);
+//        return gameDTO;
 //
-//        List<Question> approvedQuestions = Arrays.stream(approvedQuestionIds)
-//                .mapToObj(questionService::findById) // TODO improve this method: too many calls to db (use "IN")
-//                .collect(Collectors.toList());
-//
-//        Game appealedGame = getAppealedGame(approvedQuestions);
-//        List<Appeal> consideredAppeals = appealedGame.getAppeals();
-//
-//        changeUserWhoGotPointInApprovedQuestions(approvedQuestions, appealedGame);
-//        // TODO maybe move to separate method and update field through dirty checking
-//        changeAppealStageInConsideredAppeals(consideredAppeals);
-//
-//        saveApprovedAppealsAgainstGameQuestions(approvedQuestions, consideredAppeals);
 //    }
-//
-//    private void changeUserWhoGotPointInApprovedQuestions(List<Question> approvedQuestions, Game appealedGame) {
-//
-//        List<AppealedQuestion> appealedQuestionsWhichWereApproved = appealedGame.getAppeals().stream()
-//                .flatMap(appeal -> appeal.getAppealedQuestions().stream())
-//                .filter(appealedQuestion -> approvedQuestions.contains(appealedQuestion.getQuestion()))
-//                .collect(Collectors.toList());
-//
-//        approvedQuestions.stream()
-//                .forEach(approvedQuestion -> approvedQuestion.setUserWhoGotPoint(appealedQuestionsWhichWereApproved.stream()
-//                        .filter(appealedQuestionWhichWereApproved -> appealedQuestionWhichWereApproved.getQuestion().equals(approvedQuestion))
-//                        .findAny()
-//                        .orElseThrow(() -> new EntityNotFoundException("There is no any AppealedQuestion which was approved"))
-//                        .getAppeal()
-//                        .getUser()));
-//    }
-//
-//    private void changeAppealStageInConsideredAppeals(List<Appeal> consideredAppeals) {
-//        consideredAppeals.stream()
-//                .forEach(appeal -> appeal.setAppealStage(AppealStage.CONSIDERED));
-//    }
-//
-//    @Transactional
-//    public void saveApprovedAppealsAgainstGameQuestions(List<Question> approvedQuestions, List<Appeal> consideredAppeals) {
-//        questionService.saveAll(approvedQuestions);
-//        saveAll(consideredAppeals);
-//    }
-//
-//
-//    @Transactional
-//    public List<Appeal> saveAll(List<Appeal> appeals) {
-//        return appealRepository.saveAll(appeals);
-//    }
-//
+
+    // TODO add validation
+    public GameDTO getGameInformationByIdForApprovalToAppealForm(Integer gameId) {
+        Game appealedGame = gameService.findById(gameId);
+        GameDTO gameDTO = gameService.toGameDTO(appealedGame);
+        gameDTO.setQuestionDTOs(questionService.extractQuestionDTOsFromGame(appealedGame));
+
+        return gameDTO;
+    }
+
+
+    public void approveAppealsAgainstGameAppealedQuestions(int[] approvedQuestionIds) {
+        LOGGER.info("in approveAppealsAgainstGameAppealedQuestions()  successfully was got");
+
+        List<Question> approvedQuestions = Arrays.stream(approvedQuestionIds)
+                .mapToObj(questionService::findById) // TODO improve this method: too many calls to db (use "IN")
+                .collect(Collectors.toList());
+
+        Game appealedGame = getAppealedGame(approvedQuestions);
+        List<Appeal> consideredAppeals = appealedGame.getAppeals();
+
+        changeUserWhoGotPointInApprovedQuestions(approvedQuestions, appealedGame);
+        // TODO maybe move to separate method and update field through dirty checking
+        changeAppealStageInConsideredAppeals(consideredAppeals);
+
+        saveApprovedAppealsAgainstGameQuestions(approvedQuestions, consideredAppeals);
+    }
+
+    private void changeUserWhoGotPointInApprovedQuestions(List<Question> approvedQuestions, Game appealedGame) {
+        approvedQuestions.stream().forEach(ap -> System.out.println("----------------approvedQuestion: " + ap.getId()));
+
+        System.out.println("appealedGame has appeals:" + appealedGame.getAppeals().size());
+        System.out.println("appealedGame has appeals(0) whichhas appealedQuestions:" + appealedGame.getAppeals().get(0).getAppealedQuestions().size());
+
+
+        List<AppealedQuestion> appealedQuestionsWhichWereApproved = appealedGame.getAppeals().stream()
+                .flatMap(appeal -> appeal.getAppealedQuestions().stream())
+                .filter(appealedQuestion -> approvedQuestions.contains(appealedQuestion.getQuestion()))
+                .collect(Collectors.toList());
+
+        approvedQuestions.stream()
+                .forEach(approvedQuestion -> approvedQuestion.setUserWhoGotPoint(appealedQuestionsWhichWereApproved.stream()
+                        .filter(appealedQuestionWhichWereApproved -> appealedQuestionWhichWereApproved.getQuestion().equals(approvedQuestion))
+                        .findAny()
+                        .orElseThrow(() -> new EntityNotFoundException("There is no any AppealedQuestion which was approved"))
+                        .getAppeal()
+                        .getUser()));
+    }
+
+    private void changeAppealStageInConsideredAppeals(List<Appeal> consideredAppeals) {
+        consideredAppeals.stream()
+                .forEach(appeal -> appeal.setAppealStage(AppealStage.CONSIDERED));
+    }
+
+
+    public void saveApprovedAppealsAgainstGameQuestions(List<Question> approvedQuestions, List<Appeal> consideredAppeals) {
+        questionService.update(approvedQuestions);
+        updateAll(consideredAppeals);
+    }
+
+
+    public void updateAll(List<Appeal> appeals) {
+        DaoFactory.getInstance().createAppealDao().update(appeals);
+    }
+}
 //}
 
 
-}
+//    }
 //    private static final Logger LOGGER = Logger.getLogger(UserService.class);
 //    private final QuestionService questionService;
 //    private final UserService userService;
@@ -270,4 +283,5 @@ public class AppealService {
 //
 //
 //
+//}
 //}

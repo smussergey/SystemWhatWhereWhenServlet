@@ -4,31 +4,29 @@ import ua.training.game.dao.*;
 import ua.training.game.dao.connection.ConnectionPoolHolder;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 public class JDBCDaoFactory extends DaoFactory {
     private DataSource dataSource = ConnectionPoolHolder.getDataSource();
 
     @Override
     public UserDao createUserDao() {
-        return new JDBCUserDao(getConnection());
+        return new JDBCUserDao();
     }
 
     @Override
     public GameDao createGameDao() {
-        return new JDBCGameDao(getConnection());
+        return new JDBCGameDao();
     }
 
 
     @Override
     public QuestionDao createQuestionDao() {
-        return new JDBCQuestionDao(getConnection());
+        return new JDBCQuestionDao();
     }
 
     @Override
     public AppealDao createAppealDao() {
-        return new JDBCAppealDao(getConnection());
+        return new JDBCAppealDao();
     }
 
     //    @Override
@@ -36,11 +34,5 @@ public class JDBCDaoFactory extends DaoFactory {
 //        return new JDBCHistoryDaoImpl(getConnection());
 //    }
 //
-    private Connection getConnection() {
-        try {
-            return dataSource.getConnection();
-        } catch (SQLException e) {
-            throw new RuntimeException(e); //TODO Correct
-        }
-    }
+
 }

@@ -2,9 +2,11 @@ package ua.training.game.dao.impl;
 
 import org.apache.log4j.Logger;
 import ua.training.game.dao.GameDao;
+import ua.training.game.dao.connection.ConnectionPoolHolder;
 import ua.training.game.dao.mapper.*;
 import ua.training.game.domain.*;
 import ua.training.game.enums.AppealStage;
+import ua.training.game.exception.EntityNotFoundException;
 
 import java.sql.Date;
 import java.sql.*;
@@ -13,13 +15,10 @@ import java.util.*;
 
 public class JDBCGameDao implements GameDao {
     private static final Logger LOGGER = Logger.getLogger(JDBCGameDao.class);
-    private static final String CREATE_GAME_QUERY = "INSERT INTO game (date, first_player_user_id, second_player_user_id) VALUES (?, ?, ?)";
-    private static final String CREATE_QUESTION_QUERY = "INSERT INTO question (game_id, user_id) VALUES (?,?)";
+    private static final String INSERT_GAME_QUERY = "INSERT INTO game (date, first_player_user_id, second_player_user_id) VALUES (?, ?, ?)";
+    private static final String INSERT_QUESTIONS_QUERY = "INSERT INTO question (game_id, user_id) VALUES (?,?)";
 
-    private Connection connection;
-
-    public JDBCGameDao(Connection connection) {
-        this.connection = connection;
+    public JDBCGameDao() {
     }
 
     @Override
@@ -28,56 +27,53 @@ public class JDBCGameDao implements GameDao {
         ResultSet rs;
         int gameId;
 
-        try {
+        try (Connection connection = ConnectionPoolHolder.getConnection()) {
             connection.setAutoCommit(false);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            try (PreparedStatement psInsertGame = connection.prepareStatement
+                    (INSERT_GAME_QUERY, Statement.RETURN_GENERATED_KEYS);
 
-        try (PreparedStatement psGame = connection.prepareStatement
-                (CREATE_GAME_QUERY, Statement.RETURN_GENERATED_KEYS);
+                 PreparedStatement psInsertQuestions = connection.prepareStatement
+                         (INSERT_QUESTIONS_QUERY)) {
+                psInsertGame.setDate(1, Date.valueOf(game.getDate()));
+                psInsertGame.setInt(2, game.getFirstPlayer().getId());
+                psInsertGame.setInt(3, game.getSecondPlayer().getId());
 
-             PreparedStatement psQuestion = connection.prepareStatement
-                     (CREATE_QUESTION_QUERY)) {
-            psGame.setDate(1, Date.valueOf(game.getDate()));
-            psGame.setInt(2, game.getFirstPlayer().getId());
-            psGame.setInt(3, game.getSecondPlayer().getId());
+                int rowAffected = psInsertGame.executeUpdate();
+                LOGGER.info(String.format("In GameDaoImpl, method create game, after game insert: " + game));
 
-            int rowAffected = psGame.executeUpdate();
-            LOGGER.info(String.format("In GameDaoImpl, method create game, after game insert: " + game));
-
-            if (rowAffected == 0) {
-                throw new SQLException("Creating Game failed, no rows affected.");
-            }
-            rs = psGame.getGeneratedKeys();
-
-            if (rs.next()) {
-                gameId = rs.getInt(1);
-
-                List<Question> questions = game.getQuestions();
-
-                for (int i = 0; i < questions.size(); i++) { //TODO improve
-                    LOGGER.info(String.format("In GameDaoImpl, method create game, aq size = %d", questions.size()));
-                    LOGGER.info(String.format("In GameDaoImpl, method create game, for i(aq) = %d", i));
-
-                    LOGGER.info(String.format("In GameDaoImpl, method create game, before insert into answeredQuestion: gameId = %d, adId = %d : ", gameId, questions.get(i).getId()));
-                    psQuestion.setInt(1, gameId);
-                    psQuestion.setInt(2, questions.get(i).getUserWhoGotPoint().getId());
-                    psQuestion.executeUpdate();
+                if (rowAffected == 0) {
+                    throw new SQLException("Creating Game failed, no rows affected.");
                 }
-            }
-            connection.commit();
-            LOGGER.info("Game was saved");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            try {
+                rs = psInsertGame.getGeneratedKeys();
+
+                if (rs.next()) {
+                    gameId = rs.getInt(1);
+
+                    List<Question> questions = game.getQuestions();
+
+                    for (int i = 0; i < questions.size(); i++) { //TODO improve
+                        LOGGER.info(String.format("In GameDaoImpl, method create game, aq size = %d", questions.size()));
+                        LOGGER.info(String.format("In GameDaoImpl, method create game, for i(aq) = %d", i));
+
+                        LOGGER.info(String.format("In GameDaoImpl, method create game, before insert into answeredQuestion: gameId = %d, adId = %d : ", gameId, questions.get(i).getId()));
+                        psInsertQuestions.setInt(1, gameId);
+                        psInsertQuestions.setInt(2, questions.get(i).getUserWhoGotPoint().getId());
+                        psInsertQuestions.executeUpdate();
+                    }
+                }
+
+                connection.commit();
+                connection.setAutoCommit(true);
+
+            } catch (SQLException e) {
                 connection.rollback();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
+                connection.setAutoCommit(true);
+                LOGGER.error(e.getMessage());
             }
+
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
         }
-
-
     }
 
 
@@ -89,19 +85,20 @@ public class JDBCGameDao implements GameDao {
         Map<Integer, User> users = new HashMap<>();
         Map<Integer, AppealedQuestion> appealedQuestions = new HashMap<>();
 
-        try (PreparedStatement ps = connection.prepareStatement("" +
-                "SELECT * FROM game " +
-                " left join user as us1 " +
-                " on game.first_player_user_id = us1.user_id " +
-                " left join user as us2 " +
-                " on game.second_player_user_id = us2.user_id " +
-                " left join question " +
-                " on game.game_id = question.game_id " +
-                " left join appeal " +
-                " on game.game_id = appeal.game_id " +
-                " left join appealed_question " +
-                " on appeal.appeal_id = appealed_question.appeal_id " +
-                " where game.game_id = ?")) {
+        try (Connection connection = ConnectionPoolHolder.getConnection();
+             PreparedStatement ps = connection.prepareStatement("" +
+                     "SELECT * FROM game " +
+                     " left join user as us1 " +
+                     " on game.first_player_user_id = us1.user_id " +
+                     " left join user as us2 " +
+                     " on game.second_player_user_id = us2.user_id " +
+                     " left join question " +
+                     " on game.game_id = question.game_id " +
+                     " left join appeal " +
+                     " on game.game_id = appeal.game_id " +
+                     " left join appealed_question " +
+                     " on appeal.appeal_id = appealed_question.appeal_id " +
+                     " where game.game_id = ?")) {
 
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
@@ -160,14 +157,19 @@ public class JDBCGameDao implements GameDao {
                     appealedQuestion.setQuestion(questions.get(rs.getInt("appealed_question.question_id")));
                     appeal.getAppealedQuestions().add(appealedQuestion);
 
-                    game.getAppeals().add(appeal);
+                    if (game.getAppeals().contains(appeal)) {
+                    } else {
+                        game.getAppeals().add(appeal);
+                    }
+//                    game.getAppeals().add(appeal);
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.info("In findById method:");
+            return games.values().stream().findFirst();
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getMessage());
+            throw new EntityNotFoundException("not found"); // TODO correct
         }
-
-        return games.values().stream().findFirst();
     }
 
     @Override
@@ -189,7 +191,8 @@ public class JDBCGameDao implements GameDao {
                 " on game.game_id = appeal.game_id " +
                 " where game.game_id>0"; // TODO correct
 
-        try (Statement st = connection.createStatement()) {
+        try (Connection connection = ConnectionPoolHolder.getConnection();
+             Statement st = connection.createStatement()) {
             ResultSet rs = st.executeQuery(query);
 
             QuestionMapper questionMapper = new QuestionMapper();
@@ -226,7 +229,12 @@ public class JDBCGameDao implements GameDao {
                             .makeUnique(appeals, appeal);
                     appeal.setUser(users.get(rs.getInt("appeal.user_id")));
                     appeal.setGame(games.get(rs.getInt("appeal.game_id"))); // TODO check whether it is needed
-                    game.getAppeals().add(appeal);
+
+                    if (game.getAppeals().contains(appeal)) {
+                    } else {
+                        game.getAppeals().add(appeal);
+                    }
+//                    game.getAppeals().add(appeal);
                 }
 
                 Question question = questionMapper
@@ -242,8 +250,9 @@ public class JDBCGameDao implements GameDao {
                     game.getQuestions().add(question);
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getMessage());
+            throw new RuntimeException(ex); //TODO check
         }
         return new ArrayList<>(games.values());
     }
@@ -255,18 +264,19 @@ public class JDBCGameDao implements GameDao {
         Map<Integer, Game> games = new HashMap<>();
         Map<Integer, User> users = new HashMap<>();
 
-        try (PreparedStatement ps = connection.prepareStatement("" +
-                "SELECT * FROM game " +
-                " left join user as us1 " +
-                " on game.first_player_user_id = us1.user_id " +
-                " left join user as us2 " +
-                " on game.second_player_user_id = us2.user_id " +
-                " left join question " +
-                " on game.game_id = question.game_id " +
-                " left join appeal " +
-                " on game.game_id = appeal.game_id " +
-                " where game.first_player_user_id = ?" +
-                " or game.second_player_user_id = ?")) {
+        try (Connection connection = ConnectionPoolHolder.getConnection();
+             PreparedStatement ps = connection.prepareStatement("" +
+                     "SELECT * FROM game " +
+                     " left join user as us1 " +
+                     " on game.first_player_user_id = us1.user_id " +
+                     " left join user as us2 " +
+                     " on game.second_player_user_id = us2.user_id " +
+                     " left join question " +
+                     " on game.game_id = question.game_id " +
+                     " left join appeal " +
+                     " on game.game_id = appeal.game_id " +
+                     " where game.first_player_user_id = ?" +
+                     " or game.second_player_user_id = ?")) {
 
             ps.setInt(1, firstUser.getId());
             ps.setInt(2, secondUser.getId());
@@ -306,31 +316,40 @@ public class JDBCGameDao implements GameDao {
                             .makeUnique(appeals, appeal);
                     appeal.setUser(users.get(rs.getInt("appeal.user_id")));
                     appeal.setGame(games.get(rs.getInt("appeal.game_id"))); // TODO check whether it is needed
-                    game.getAppeals().add(appeal);
+
+
+                    if (game.getAppeals().contains(appeal)) {
+                    } else {
+                        game.getAppeals().add(appeal);
+                    }
+
+
+//                    game.getAppeals().add(appeal);
                 }
 
-                Question question = questionMapper
-                        .extractFromResultSet(rs);
-                question = questionMapper
-                        .makeUnique(questions, question);
-                question.setGame(game);
-                question.setUserWhoGotPoint(users.get(rs.getInt("question.user_id")));
+                    Question question = questionMapper
+                            .extractFromResultSet(rs);
+                    question = questionMapper
+                            .makeUnique(questions, question);
+                    question.setGame(game);
+                    question.setUserWhoGotPoint(users.get(rs.getInt("question.user_id")));
 
 
-                if (game.getQuestions().contains(question)) {
-                } else {
-                    game.getQuestions().add(question);
+                    if (game.getQuestions().contains(question)) {
+                    } else {
+                        game.getQuestions().add(question);
+                    }
                 }
+            } catch(SQLException ex){
+                LOGGER.error(ex.getMessage());
+                throw new RuntimeException(ex); //TODO check
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+            return new ArrayList<>(games.values());
         }
-        return new ArrayList<>(games.values());
-    }
 
 
-    @Override
-    public List<Game> findAllByUsername(String username) {
+        @Override
+        public List<Game> findAllByUsername (String username){
 //        Map<Integer, Question> answeredQuestions = new HashMap<>();
 //        Map<Integer, Appeal> appeals = new HashMap<>();
 //        Map<Integer, Game> games = new HashMap<>();
@@ -411,12 +430,12 @@ public class JDBCGameDao implements GameDao {
 //            throw new RuntimeException(ex); //TODO Correct
 //        }
 //        return new ArrayList<>(games.values());
-        return null; //TODO Correct
-    }
+            return null; //TODO Correct
+        }
 
-    //TODO implement query for date too
-    @Override
-    public List<Game> findAllByAppealStageAndDateLaterThan(AppealStage appealStage, LocalDate localDate) {
+        //TODO implement query for date too
+        @Override
+        public List<Game> findAllByAppealStageAndDateLaterThan (AppealStage appealStage, LocalDate localDate){
 //        Map<Integer, Question> answeredQuestions = new HashMap<>();
 //        Map<Integer, Appeal> appeals = new HashMap<>();
 //        Map<Integer, Game> games = new HashMap<>();
@@ -497,35 +516,28 @@ public class JDBCGameDao implements GameDao {
 //            throw new RuntimeException(ex); //TODO Correct
 //        }
 //        return new ArrayList<>(games.values());
-        return null; //TODO Correct
-    }
+            return null; //TODO Correct
+        }
 
-    @Override
-    public void update(Game entity) {
+        @Override
+        public void update (Game entity){
 
-    }
+        }
 
-    @Override
-    public void delete(int id) {
-        LOGGER.info(String.format("method delete by id = %d", id));
-
-        try (PreparedStatement ps = connection.prepareStatement
-                ("DELETE  FROM game where game_id = ?")) {
-
-            ps.setInt(1, id);
-            ps.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace(); //TODO redo
+        @Override
+        public void delete ( int id){
+//        LOGGER.info(String.format("method delete by id = %d", id));
+//
+//        try (PreparedStatement ps = connection.prepareStatement
+//                ("DELETE  FROM game where game_id = ?")) {
+//
+//            ps.setInt(1, id);
+//            ps.executeUpdate();
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace(); //TODO redo
+//        }
+//    }
+//
         }
     }
-
-    @Override
-    public void close() {
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e); // TODO correct
-        }
-    }
-}

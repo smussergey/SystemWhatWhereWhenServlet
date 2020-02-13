@@ -2,6 +2,7 @@ package ua.training.game.dao.impl;
 
 import org.apache.log4j.Logger;
 import ua.training.game.dao.AppealDao;
+import ua.training.game.dao.connection.ConnectionPoolHolder;
 import ua.training.game.domain.Appeal;
 import ua.training.game.domain.AppealedQuestion;
 
@@ -11,10 +12,8 @@ import java.util.Optional;
 
 public class JDBCAppealDao implements AppealDao {
     private static final Logger LOGGER = Logger.getLogger(JDBCAppealDao.class);
-    private Connection connection;
 
-    public JDBCAppealDao(Connection connection) {
-        this.connection = connection;
+    public JDBCAppealDao() {
     }
 
     @Override
@@ -23,22 +22,20 @@ public class JDBCAppealDao implements AppealDao {
         ResultSet rs;
         int appealId;
 
-        try {
+        try (Connection connection = ConnectionPoolHolder.getConnection()) {
             connection.setAutoCommit(false);
-
-//        boolean flag = false;
-            try (PreparedStatement psAppeal = connection.prepareStatement
+            try (PreparedStatement psInsertAppeal = connection.prepareStatement
                     ("INSERT INTO appeal (date, game_id, user_id, appeal_stage)" +
                             " VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-                 PreparedStatement psAQ = connection.prepareStatement
-                         ("INSERT  INTO appealed_question (appeal_id, question_id) VALUES (?,?)")
-            ) {
-                psAppeal.setDate(1, Date.valueOf(appeal.getDate()));
-                psAppeal.setInt(2, appeal.getGame().getId());
-                psAppeal.setInt(3, appeal.getUser().getId());
-                psAppeal.setString(4, appeal.getAppealStage().name());
+                 PreparedStatement psInsertAppealedQuestions = connection.prepareStatement
+                         ("INSERT  INTO appealed_question (appeal_id, question_id) VALUES (?,?)")) {
 
-                int rowAffected = psAppeal.executeUpdate();
+                psInsertAppeal.setDate(1, Date.valueOf(appeal.getDate()));
+                psInsertAppeal.setInt(2, appeal.getGame().getId());
+                psInsertAppeal.setInt(3, appeal.getUser().getId());
+                psInsertAppeal.setString(4, appeal.getAppealStage().name());
+
+                int rowAffected = psInsertAppeal.executeUpdate();
 
                 LOGGER.info(String.format("In AppealDaoImpl, method create, after appeal insert: " + appeal));
 
@@ -46,7 +43,7 @@ public class JDBCAppealDao implements AppealDao {
                 if (rowAffected == 0) {
                     throw new SQLException("Creating Appeal failed, no rows affected.");
                 }
-                rs = psAppeal.getGeneratedKeys();
+                rs = psInsertAppeal.getGeneratedKeys();
 
                 if (rs.next()) {
                     appealId = rs.getInt(1);
@@ -54,79 +51,91 @@ public class JDBCAppealDao implements AppealDao {
                     List<AppealedQuestion> appealedQuestions = appeal.getAppealedQuestions();
                     for (AppealedQuestion appealedQuestion : appealedQuestions) { //TODO improve
                         LOGGER.info(String.format("In AppealDaoImpl, method create appeal, aq size = %d", appealedQuestions.size()));
-                        psAQ.setInt(1, appealId);
-                        psAQ.setInt(2, appealedQuestion.getQuestion().getId());
-                        psAQ.executeUpdate();
+                        psInsertAppealedQuestions.setInt(1, appealId);
+                        psInsertAppealedQuestions.setInt(2, appealedQuestion.getQuestion().getId());
+                        psInsertAppealedQuestions.executeUpdate();
                     }
                 }
 
                 connection.commit();
-                LOGGER.info("Appeal was saved");
+                connection.setAutoCommit(true);
+
+            } catch (SQLException e) {
+                connection.rollback();
+                connection.setAutoCommit(true);
+                LOGGER.error(e.getMessage());
             }
 
-        } catch (
-                SQLException ex) {
-            try {
-                connection.rollback(); // TODO check where to put it correctly
-            } catch (SQLException e) {
-                e.printStackTrace();//TODO implement
-            }
-            ex.printStackTrace();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
         }
     }
 
     @Override
     public Optional<Appeal> findById(int id) {
-        return Optional.empty();
+        throw new UnsupportedOperationException("Method is not implemented yet");
     }
 
     @Override
     public List<Appeal> findAll() {
-        return null;
+        throw new UnsupportedOperationException("Method is not implemented yet");
     }
 
     @Override
     public void update(Appeal appeal) {
         LOGGER.info(String.format("In AppealDaoImpl, method update appeal: "));
 
-        try (PreparedStatement ps = connection.prepareStatement
-                ("UPDATE  appeal set appeal_stage = ? where appeal_id = ?")) {
+        try (Connection connection = ConnectionPoolHolder.getConnection();
+             PreparedStatement ps = connection.prepareStatement
+                     ("UPDATE  appeal set appeal_stage = ? where appeal_id = ?")) {
 
             ps.setString(1, appeal.getAppealStage().name());
             ps.setInt(2, appeal.getId());
             ps.executeUpdate();
 
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getMessage());
+            throw new RuntimeException(ex); //TODO check
+        }
+    }
+
+    @Override
+    public void update(List<Appeal> appeals) {
+        LOGGER.info(String.format("In AppealDaoImpl, method update appeal: "));
+
+        try (Connection connection = ConnectionPoolHolder.getConnection()) {
+            connection.setAutoCommit(false);
+            try (PreparedStatement psUpdate = connection.prepareStatement
+                    ("UPDATE  appeal set appeal_stage = ? where appeal_id = ?")) {
+
+                for (int i = 0; i < appeals.size(); i++) {
+                    psUpdate.setString(1, appeals.get(i).getAppealStage().name());
+                    psUpdate.setInt(2, appeals.get(i).getId());
+                    psUpdate.executeUpdate();
+                }
+
+                connection.commit();
+                connection.setAutoCommit(true);
+
+            } catch (SQLException e) {
+                connection.rollback();
+                connection.setAutoCommit(true);
+                LOGGER.error(e.getMessage());
+            }
+
         } catch (SQLException e) {
-            e.printStackTrace(); //TODO REDO
+            LOGGER.error(e.getMessage());
         }
     }
 
 
     @Override
     public void delete(int id) {
+        throw new UnsupportedOperationException("Method is not implemented yet");
     }
 
     @Override
     public void deleteByGameId(int gameId) {
-        LOGGER.info(String.format("method deleteByGameId id = %d", gameId));
-
-        try (PreparedStatement ps = connection.prepareStatement
-                ("DELETE  FROM appeal where game_id = ?")) {
-
-            ps.setInt(1, gameId);
-            ps.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace(); //TODO redo
-        }
-    }
-
-    @Override
-    public void close() {
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e); // TODO correct
-        }
+        throw new UnsupportedOperationException("Method is not implemented yet"); //TODO check if it is needed
     }
 }

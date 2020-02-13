@@ -8,7 +8,7 @@
 <html>
 <head>
     <title>
-        <fmt:message key="game.statistics.page.title"/>
+        <fmt:message key="game.details.page.title"/>
     </title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -125,7 +125,7 @@
     <div id="details">
         <table class="table table-striped table-hover table-bordered table-sm">
             <h1>
-                <fmt:message key="game.statistics.table.caption"/>
+                <fmt:message key="game.details.table.caption"/>
             </h1>
             <thead class="thead-light">
             <tr>
@@ -216,7 +216,7 @@
 
     <c:if test="${gameDTO.appealPossible}">
         <div>
-            <form action="${pageContext.request.contextPath}/player/fileAppealFormPlayer" method="post">
+            <form action="${pageContext.request.contextPath}/player/fileAppealFormPlayer" method="get">
                 <input type="hidden" name="gameid" value="${gameDTO.id}">
                     <%--            TODO improve--%>
                 <button class="button" type="submit">

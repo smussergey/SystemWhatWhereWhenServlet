@@ -8,6 +8,8 @@ import ua.training.game.web.command.page.LoginPageCommand;
 import ua.training.game.web.command.page.RegistrationPageCommand;
 import ua.training.game.web.command.player.*;
 import ua.training.game.web.command.referee.*;
+import ua.training.system_what_where_when_servlet.controller.command.referee.ConsiderAppealAgainstAppealedQuestionsRefereeCommand;
+import ua.training.system_what_where_when_servlet.controller.command.referee.ConsiderationAppealFormRefereeCommand;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -60,10 +62,10 @@ public class MainServlet extends HttpServlet {
                 new FileAppealFormPlayerCommand());
         commands.put("fileAppealAgainstAnsweredQuestions",
                 new FileAppealAgainstAnsweredQuestionsPlayerCommand());
-//        commands.put("considerationAppealForm",
-//                new ConsiderationAppealFormRefereeCommand());
-//        commands.put("considerAppealAgainstAnsweredQuestions",
-//                new ConsiderAppealAgainstAnsweredQuestionsRefereeCommand());
+        commands.put("considerationAppealForm",
+                new ConsiderationAppealFormRefereeCommand());
+        commands.put("considerAppealAgainstAnsweredQuestions",
+                new ConsiderAppealAgainstAppealedQuestionsRefereeCommand());
 //        commands.put("historyGamesStatistics",
 //                new HistoryGamesStatisticsRefereeCommand());
 //        commands.put("historyConsiderationReferee",
@@ -85,18 +87,16 @@ public class MainServlet extends HttpServlet {
         path = path.replaceAll(".*/", "");
 
         Command command = commands.getOrDefault(path, (req, res) -> "/WEB-INF/error/error404.jsp");
-
         String page = command.execute(request, response);
+//        request.getRequestDispatcher(page).forward(request, response);
 
-        request.getRequestDispatcher(page).forward(request, response);
 
-
-//        if (page.contains("redirect:")) {
-//            page = page.replace("redirect:", "");
-//            response.sendRedirect(page);
-//        } else {
-//            request.getRequestDispatcher(page).forward(request, response);
-//        }
+        if (page.contains("redirect:")) {
+            page = page.replace("redirect:", "");
+            response.sendRedirect(page);
+        } else {
+            request.getRequestDispatcher(page).forward(request, response);
+        }
 
     }
 }

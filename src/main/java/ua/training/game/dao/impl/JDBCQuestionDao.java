@@ -2,6 +2,7 @@ package ua.training.game.dao.impl;
 
 import org.apache.log4j.Logger;
 import ua.training.game.dao.QuestionDao;
+import ua.training.game.dao.connection.ConnectionPoolHolder;
 import ua.training.game.dao.mapper.GameMapper;
 import ua.training.game.dao.mapper.QuestionMapper;
 import ua.training.game.dao.mapper.UserMapper;
@@ -19,12 +20,9 @@ import java.util.Optional;
 
 public class JDBCQuestionDao implements QuestionDao {
     private static final Logger LOGGER = Logger.getLogger(JDBCQuestionDao.class);
-    private Connection connection;
 
-    public JDBCQuestionDao(Connection connection) {
-        this.connection = connection;
+    public JDBCQuestionDao() {
     }
-
 
     @Override
     public void create(Question entity) {
@@ -36,13 +34,14 @@ public class JDBCQuestionDao implements QuestionDao {
         LOGGER.info(String.format("In method findById: " + id));
         Optional<Question> result = Optional.empty();
 
-        try (PreparedStatement ps = connection.prepareStatement("" +
-                " select * from question " +
-                " left join game " +
-                " on question.game_id = game.game_id " +
-                " left join user " +
-                " on question.user_id=user.user_id " +
-                " where question.question_id = ?")) {
+        try (Connection connection = ConnectionPoolHolder.getConnection();
+             PreparedStatement ps = connection.prepareStatement("" +
+                     " select * from question " +
+                     " left join game " +
+                     " on question.game_id = game.game_id " +
+                     " left join user " +
+                     " on question.user_id=user.user_id " +
+                     " where question.question_id = ?")) {
 
             ps.setInt(1, id);
 
@@ -51,7 +50,6 @@ public class JDBCQuestionDao implements QuestionDao {
             QuestionMapper answeredQuestionMapper = new QuestionMapper();
             GameMapper gameMapper = new GameMapper();
             UserMapper userMapper = new UserMapper();
-
 
             while (rs.next()) {
                 Question question = // TODO check what to do if ID doesn't exist
@@ -67,14 +65,12 @@ public class JDBCQuestionDao implements QuestionDao {
 
                 result = Optional.of(question);
             }
+            LOGGER.info("In findById method:");
+            return result;
         } catch (SQLException ex) {
-            LOGGER.error("Exception in method: findById.", ex);
+            LOGGER.error(ex.getMessage());
             throw new EntityNotFoundException("not found"); // TODO correct
         }
-        LOGGER.info(String.format("In method findById entity was found with id = " + id));
-
-        return result;
-
     }
 
     @Override
@@ -86,17 +82,24 @@ public class JDBCQuestionDao implements QuestionDao {
     public void update(Question question) {
         LOGGER.info(String.format("In method update answeredQuestion: "));
 
-        try (PreparedStatement psAQ = connection.prepareStatement
-                ("UPDATE  answered_question set user_id = ? where answered_question_id = ?")) {
+        try (Connection connection = ConnectionPoolHolder.getConnection();
+             PreparedStatement psAQ = connection.prepareStatement
+                     ("UPDATE  question set user_id = ? where question_id = ?")) {
 
             psAQ.setInt(1, question.getUserWhoGotPoint().getId());
             psAQ.setInt(2, question.getId());
             psAQ.executeUpdate();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getMessage());
+            throw new RuntimeException("not found"); // TODO correct
         }
     }
+
+
+
+
+
 
     @Override
     public void updateAppealField(Question question) { // TODO in transaction when appeal is saved
@@ -127,9 +130,39 @@ public class JDBCQuestionDao implements QuestionDao {
 
     }
 
+
+    @Override
+    public void update(List<Question> questions) {
+        LOGGER.info(String.format("In QuestionDaoImpl, method update appeal: "));
+
+        try (Connection connection = ConnectionPoolHolder.getConnection()) {
+            connection.setAutoCommit(false);
+            try (PreparedStatement psUpdate = connection.prepareStatement
+                    ("UPDATE  question set user_id = ? where question_id = ?")) {
+
+                for (int i = 0; i < questions.size(); i++) {
+                    psUpdate.setInt(1, questions.get(i).getUserWhoGotPoint().getId());
+                    psUpdate.setInt(2, questions.get(i).getId());
+                    psUpdate.executeUpdate();
+                }
+
+                connection.commit();
+                connection.setAutoCommit(true);
+
+            } catch (SQLException e) {
+                connection.rollback();
+                connection.setAutoCommit(true);
+                LOGGER.error(e.getMessage());
+            }
+
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        }
+    }
+
     @Override
     public void delete(int id) {
-        throw new UnsupportedOperationException("Method is not implemented");
+        throw new UnsupportedOperationException("Method is not implemented yet");
     }
 
 
@@ -137,26 +170,16 @@ public class JDBCQuestionDao implements QuestionDao {
     public void deleteByGameId(int gameId) {
         LOGGER.info(String.format("In method deleteByGameId id = %d", gameId));
 
-        try (PreparedStatement ps = connection.prepareStatement
-                ("DELETE  FROM appeal where game_id = ?")) {
+        try (Connection connection = ConnectionPoolHolder.getConnection();
+             PreparedStatement ps = connection.prepareStatement
+                     ("DELETE  FROM appeal where game_id = ?")) {
 
             ps.setInt(1, gameId);
             ps.executeUpdate();
 
-        } catch (SQLException e) {
-            e.printStackTrace(); //TODO redo
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getMessage());
+            throw new EntityNotFoundException("not found"); // TODO correct
         }
     }
-
-
-    @Override
-    public void close() {
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e); // TODO correct
-        }
-    }
-
-
 }

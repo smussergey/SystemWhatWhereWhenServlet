@@ -8,7 +8,7 @@ public class Game {
     private LocalDate date;
     private User firstPlayer;
     private User secondPlayer;
-    private Set<Appeal> appeals = new HashSet<>();
+    private List<Appeal> appeals = new ArrayList<>();
     private List<Question> questions = new ArrayList<>(); // TODO Check to use Set
 
     public Game() {
@@ -46,11 +46,11 @@ public class Game {
         this.secondPlayer = secondPlayer;
     }
 
-    public Set<Appeal> getAppeals() {
+    public List<Appeal> getAppeals() {
         return appeals;
     }
 
-    public void setAppeals(Set<Appeal> appeals) {
+    public void setAppeals(List<Appeal> appeals) {
         this.appeals = appeals;
     }
 

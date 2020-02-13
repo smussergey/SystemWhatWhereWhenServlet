@@ -1,8 +1,8 @@
 package ua.training.game.web.command;
 
 import org.apache.log4j.Logger;
-import ua.training.game.web.dto.UserRegistrationDTO;
 import ua.training.game.service.UserService;
+import ua.training.game.web.dto.UserRegistrationDTO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

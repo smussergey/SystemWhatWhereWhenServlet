@@ -1,8 +1,8 @@
 package ua.training.game.dao;
 
-import ua.training.game.web.dto.UserDTO;
-import ua.training.game.enums.Role;
 import ua.training.game.domain.User;
+import ua.training.game.enums.Role;
+import ua.training.game.web.dto.UserDTO;
 
 import java.util.List;
 import java.util.Optional;

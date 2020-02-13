@@ -117,7 +117,7 @@
         <div id="details">
             <table class="table table-striped table-hover table-bordered table-sm">
                 <h1>
-                    <fmt:message key="game.statistics.table.caption"/>
+                    <fmt:message key="game.details.table.caption"/>
                 </h1>
                 <thead class="thead-light">
                 <tr>

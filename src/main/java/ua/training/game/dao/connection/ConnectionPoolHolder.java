@@ -1,12 +1,16 @@
 package ua.training.game.dao.connection;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.log4j.Logger;
 import ua.training.game.DBConstants;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 public class ConnectionPoolHolder {
+    private static final Logger LOGGER = Logger.getLogger(ConnectionPoolHolder.class);
     private static volatile DataSource dataSource;
     private static ResourceBundle bundle = ResourceBundle.getBundle("db");
 
@@ -27,6 +31,17 @@ public class ConnectionPoolHolder {
             }
         }
         return dataSource;
+    }
+
+
+    public static Connection getConnection() {
+        try {
+            Connection connection = dataSource.getConnection();
+            return connection;
+        } catch (SQLException ex) {
+            LOGGER.error("Unable to get connection to DB " + ex.getMessage());
+            throw new RuntimeException(ex); //TODO check
+        }
     }
 
 }

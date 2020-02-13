@@ -58,7 +58,7 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="${pageContext.request.contextPath}/loginPage">
-                    <fmt:message key="navbar.link.register"/>
+                    <fmt:message key="navbar.link.login"/>
                 </a>
             </li>
         </ul>
@@ -67,7 +67,7 @@
 
 <div class="container">
     <h2 class="panel-title">
-        <fmt:message key="login.form.header"/>
+        <fmt:message key="registration.form.header"/>
     </h2>
     <div class="form-input-error">
         <%--        <span th:if="${error}" th:text="#{login.message.wrong.login.or.password}"></span>--%>

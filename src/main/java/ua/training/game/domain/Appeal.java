@@ -3,7 +3,9 @@ package ua.training.game.domain;
 import ua.training.game.enums.AppealStage;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 
 public class Appeal {

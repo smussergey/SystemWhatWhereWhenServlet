@@ -1,8 +1,8 @@
 package ua.training.game.web.command.referee;
 
 import org.apache.log4j.Logger;
-import ua.training.game.web.command.Command;
 import ua.training.game.service.NewGameService;
+import ua.training.game.web.command.Command;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

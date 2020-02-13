@@ -4,13 +4,12 @@ import org.apache.log4j.Logger;
 import org.mindrot.jbcrypt.BCrypt;
 import ua.training.game.dao.DaoFactory;
 import ua.training.game.dao.UserDao;
+import ua.training.game.domain.User;
+import ua.training.game.enums.Role;
+import ua.training.game.exception.EntityNotFoundException;
 import ua.training.game.web.dto.UserDTO;
 import ua.training.game.web.dto.UserRegistrationDTO;
-import ua.training.game.enums.Role;
-import ua.training.game.domain.User;
-import ua.training.game.exception.EntityNotFoundException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserService {
@@ -55,13 +54,8 @@ public class UserService {
 //    }
 
     public List<UserDTO> getAllUserDTOsByRole(Role role) {
-        List<UserDTO> userDTOs = new ArrayList<>();
-        try (UserDao userDao = daoFactory.createUserDao()) {
-            userDTOs = userDao.getAllUserDTOsByRole(role);
-        } catch (Exception e) {
-            e.printStackTrace(); //TODO Correct
-        }
-        return userDTOs;
+        UserDao userDao = daoFactory.createUserDao();
+        return userDao.getAllUserDTOsByRole(role);
     }
 
 

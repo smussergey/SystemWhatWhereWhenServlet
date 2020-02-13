@@ -147,7 +147,7 @@
                 <fmt:message key="game.new.field.label.max.scores"/>
             </label>
             <br>
-            <input type="number" min="1" id="quantity" name="maxscores" required/>
+            <input id="quantity" name="maxscores" required/>
         </div>
         <button type="submit" class="btn btn-primary">
             <fmt:message key="game.new.button.label"/>

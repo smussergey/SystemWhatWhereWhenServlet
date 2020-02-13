@@ -1,7 +1,7 @@
 package ua.training.game.dao.mapper;
 
-import ua.training.game.enums.Role;
 import ua.training.game.domain.User;
+import ua.training.game.enums.Role;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

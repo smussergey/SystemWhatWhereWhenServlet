@@ -1,10 +1,10 @@
 package ua.training.game.web.command.referee;
 
 import org.apache.log4j.Logger;
-import ua.training.game.web.command.Command;
-import ua.training.game.web.dto.UserDTO;
 import ua.training.game.enums.Role;
 import ua.training.game.service.UserService;
+import ua.training.game.web.command.Command;
+import ua.training.game.web.dto.UserDTO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
