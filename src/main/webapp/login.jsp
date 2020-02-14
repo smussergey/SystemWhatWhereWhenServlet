@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<fmt:setLocale value="${param.lang}"/>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<fmt:setLocale value="${lang}"/>
 <fmt:setBundle basename="messages"/>
 
 
@@ -69,8 +70,15 @@
     <h2 class="panel-title">
         <fmt:message key="login.form.header"/>
     </h2>
+
     <div class="form-input-error">
         <%--        <span th:if="${error}" th:text="#{login.message.wrong.login.or.password}"></span>--%>
+
+        <c:if test="${errorIncorrectCredentials==true}">
+            <label class="error"> <fmt:message key="login.error.message.wrong.login.or.password"/></label>
+            <%--            <span><fmt:message key="${requestScope.error}"/></span>--%>
+        </c:if>
+
     </div>
 
     <div class="panel-body">

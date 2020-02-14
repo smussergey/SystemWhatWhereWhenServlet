@@ -1,5 +1,7 @@
 package ua.training.game.web.command;
 
+import ua.training.game.web.command.util.AuthUtil;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -11,18 +13,18 @@ public class LogoutCommand implements Command {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
+        String username = (String) session.getAttribute("username");
 
         System.out.println("LogoutCommand username before remove:" + session.getAttribute("username"));
         System.out.println("LogoutCommand role before remove:" + session.getAttribute("role"));
 
-        Set<String> loggedUsers = (HashSet<String>) session.getServletContext()
-                .getAttribute("loggedUsers");
+        Set<String> loggedUsers = (HashSet<String>) session.getServletContext().getAttribute("loggedUsers");
 
-        loggedUsers.stream().forEach(user-> System.out.println("username: " + user));
+        loggedUsers.stream().forEach(user -> System.out.println("username: " + user));
 
-        loggedUsers.remove(request.getSession().getAttribute("username"));
+        AuthUtil.RemoveUserFromContext(session, username);
 
-        loggedUsers.stream().forEach(user-> System.out.println("username: " + user));
+        loggedUsers.stream().forEach(user -> System.out.println("username: " + user));
 
         session.removeAttribute("role");
         session.removeAttribute("username");

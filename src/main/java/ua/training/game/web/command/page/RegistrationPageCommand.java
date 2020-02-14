@@ -8,6 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 public class RegistrationPageCommand implements Command {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) {
-        return "registration.jsp";
+        return "/registration.jsp";
     }
 }
