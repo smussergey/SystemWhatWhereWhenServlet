@@ -1,4 +1,4 @@
-package ua.training.game;
+package ua.training.game.dao;
 
 public interface DBConstants {
     String DB_URL = "db.url";

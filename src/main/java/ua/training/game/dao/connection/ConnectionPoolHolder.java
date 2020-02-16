@@ -2,7 +2,7 @@ package ua.training.game.dao.connection;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.Logger;
-import ua.training.game.DBConstants;
+import ua.training.game.dao.DBConstants;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

@@ -6,6 +6,7 @@ import ua.training.game.domain.Game;
 import ua.training.game.domain.History;
 import ua.training.game.util.ResourceBundleUtil;
 import ua.training.game.web.dto.GameDTO;
+import ua.training.game.web.pagination.Page;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -100,12 +101,44 @@ public class HistoryService {
 //    }
 
 
-    public List<GameDTO> getHistoryGameStatisticsByAllGamesAndPlayers() {
-        return findAll().stream()
+//    public List<GameDTO> getHistoryGameStatisticsByAllGamesAndPlayers() {
+//        return findAll().stream()
+//                .map(this::historyToGameDTO)
+//                .sorted(Comparator.comparing(GameDTO::getDate).reversed())
+//                .collect(Collectors.toList());
+//    }
+
+    public Page<GameDTO> getHistoryGameStatisticsByAllGamesAndPlayers(int currentPage, int recordsPerPage) {
+        Page<History> historyPage = daoFactory.createHistoryDao()
+                .getHistoryGameStatisticsByAllGamesAndPlayers(currentPage, recordsPerPage);
+
+        List<GameDTO> gameDTOs = historyPage.getEntries()
+                .stream()
                 .map(this::historyToGameDTO)
                 .sorted(Comparator.comparing(GameDTO::getDate).reversed())
                 .collect(Collectors.toList());
+
+        Page<GameDTO> gameDTOPage = new Page<>();
+        gameDTOPage.setPageSize(historyPage.getPageSize());
+        gameDTOPage.setNumberOfEntries(historyPage.getNumberOfEntries());
+        gameDTOPage.setCurrentPage(historyPage.getCurrentPage());
+        gameDTOPage.setEntries(gameDTOs);
+        int numberOfPages = calculateNumberOfPages(historyPage.getNumberOfEntries(),
+                historyPage.getPageSize());
+
+        gameDTOPage.setNumberOfPages(numberOfPages);
+        return gameDTOPage;
     }
+
+    private int calculateNumberOfPages(int numberOfEntries, int pageSize) {
+        int numberOfPages = numberOfEntries / pageSize;
+        if (numberOfEntries % pageSize > 0) {
+            numberOfPages++;
+        }
+        return numberOfPages;
+
+    }
+
 
     private GameDTO historyToGameDTO(History history) {
         GameDTO gameDTO = new GameDTO();
@@ -118,5 +151,6 @@ public class HistoryService {
         gameDTO.setAppealStage(ResourceBundleUtil.getBundleStringForAppealStage(history.getAppealStage()));
         return gameDTO;
     }
+
 
 }

@@ -17,10 +17,10 @@ public class JDBCAppealDao implements AppealDao {
     }
 
     @Override
-    public void create(Appeal appeal) {
+    public int create(Appeal appeal) {
         LOGGER.info(String.format("In AppealDaoImpl, method create appeal: "));
         ResultSet rs;
-        int appealId;
+        int createdAppealId = 0;
 
         try (Connection connection = ConnectionPoolHolder.getConnection()) {
             connection.setAutoCommit(false);
@@ -46,12 +46,12 @@ public class JDBCAppealDao implements AppealDao {
                 rs = psInsertAppeal.getGeneratedKeys();
 
                 if (rs.next()) {
-                    appealId = rs.getInt(1);
+                    createdAppealId = rs.getInt(1);
 
                     List<AppealedQuestion> appealedQuestions = appeal.getAppealedQuestions();
                     for (AppealedQuestion appealedQuestion : appealedQuestions) { //TODO improve
                         LOGGER.info(String.format("In AppealDaoImpl, method create appeal, aq size = %d", appealedQuestions.size()));
-                        psInsertAppealedQuestions.setInt(1, appealId);
+                        psInsertAppealedQuestions.setInt(1, createdAppealId);
                         psInsertAppealedQuestions.setInt(2, appealedQuestion.getQuestion().getId());
                         psInsertAppealedQuestions.executeUpdate();
                     }
@@ -69,6 +69,7 @@ public class JDBCAppealDao implements AppealDao {
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
         }
+        return createdAppealId;
     }
 
     @Override

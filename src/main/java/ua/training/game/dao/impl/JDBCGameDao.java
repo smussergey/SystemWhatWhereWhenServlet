@@ -21,10 +21,10 @@ public class JDBCGameDao implements GameDao {
     }
 
     @Override
-    public void create(Game game) {
+    public int create(Game game) {
         LOGGER.info(String.format("In GameDaoImpl, method create game: " + game));
         ResultSet rs;
-        int gameId;
+        int createdGameId = 0;
 
         try (Connection connection = ConnectionPoolHolder.getConnection()) {
             connection.setAutoCommit(false);
@@ -46,7 +46,7 @@ public class JDBCGameDao implements GameDao {
                 rs = psInsertGame.getGeneratedKeys();
 
                 if (rs.next()) {
-                    gameId = rs.getInt(1);
+                    createdGameId = rs.getInt(1);
 
                     List<Question> questions = game.getQuestions();
 
@@ -54,8 +54,8 @@ public class JDBCGameDao implements GameDao {
                         LOGGER.info(String.format("In GameDaoImpl, method create game, aq size = %d", questions.size()));
                         LOGGER.info(String.format("In GameDaoImpl, method create game, for i(aq) = %d", i));
 
-                        LOGGER.info(String.format("In GameDaoImpl, method create game, before insert into answeredQuestion: gameId = %d, adId = %d : ", gameId, questions.get(i).getId()));
-                        psInsertQuestions.setInt(1, gameId);
+                        LOGGER.info(String.format("In GameDaoImpl, method create game, before insert into answeredQuestion: gameId = %d, adId = %d : ", createdGameId, questions.get(i).getId()));
+                        psInsertQuestions.setInt(1, createdGameId);
                         psInsertQuestions.setInt(2, questions.get(i).getUserWhoGotPoint().getId());
                         psInsertQuestions.executeUpdate();
                     }
@@ -73,6 +73,7 @@ public class JDBCGameDao implements GameDao {
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
         }
+        return createdGameId;
     }
 
 
@@ -326,25 +327,25 @@ public class JDBCGameDao implements GameDao {
 //                    game.getAppeals().add(appeal);
                 }
 
-                    Question question = questionMapper
-                            .extractFromResultSet(rs);
-                    question = questionMapper
-                            .makeUnique(questions, question);
-                    question.setGame(game);
-                    question.setUserWhoGotPoint(users.get(rs.getInt("question.user_id")));
+                Question question = questionMapper
+                        .extractFromResultSet(rs);
+                question = questionMapper
+                        .makeUnique(questions, question);
+                question.setGame(game);
+                question.setUserWhoGotPoint(users.get(rs.getInt("question.user_id")));
 
 
-                    if (game.getQuestions().contains(question)) {
-                    } else {
-                        game.getQuestions().add(question);
-                    }
+                if (game.getQuestions().contains(question)) {
+                } else {
+                    game.getQuestions().add(question);
                 }
-            } catch(SQLException ex){
-                LOGGER.error(ex.getMessage());
-                throw new RuntimeException(ex); //TODO check
             }
-            return new ArrayList<>(games.values());
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getMessage());
+            throw new RuntimeException(ex); //TODO check
         }
+        return new ArrayList<>(games.values());
+    }
 
     @Override //TODO rename method find by player
     public List<Game> findAllByDateBefore(LocalDate date) {
@@ -427,7 +428,7 @@ public class JDBCGameDao implements GameDao {
                     game.getQuestions().add(question);
                 }
             }
-        } catch(SQLException ex){
+        } catch (SQLException ex) {
             LOGGER.error(ex.getMessage());
             throw new RuntimeException(ex); //TODO check
         }
@@ -435,14 +436,13 @@ public class JDBCGameDao implements GameDao {
     }
 
 
+    @Override
+    public void update(Game entity) {
 
-        @Override
-        public void update (Game entity){
+    }
 
-        }
-
-        @Override
-        public void delete ( int id){
+    @Override
+    public void delete(int id) {
 //        LOGGER.info(String.format("method delete by id = %d", id));
 //
 //        try (PreparedStatement ps = connection.prepareStatement
@@ -456,5 +456,5 @@ public class JDBCGameDao implements GameDao {
 //        }
 //    }
 //
-        }
     }
+}

@@ -19,7 +19,7 @@ public class NewGameService {
 //        this.gameService = gameService;
 //    }
 
-    public void runNewGame(Integer firstPlayerId, Integer secondPlayerId, int maxNumberOfScoresToFinishGame) {
+    public int runNewGame(Integer firstPlayerId, Integer secondPlayerId, int maxNumberOfScoresToFinishGame) {
 
         if (firstPlayerId.equals(secondPlayerId)) {
 //            log.error("IN NewGameService, method runNewGame- firstPlayerId: {} secondPlayerId {} are the same", firstPlayerId, secondPlayerId);
@@ -28,7 +28,7 @@ public class NewGameService {
 
         Game game = generateNewGameWithResults(firstPlayerId, secondPlayerId, maxNumberOfScoresToFinishGame);
 
-        gameService.save(game);
+        return gameService.save(game);
 //        return save(game);
     }
 

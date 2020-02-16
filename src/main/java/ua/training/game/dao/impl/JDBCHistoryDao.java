@@ -7,6 +7,7 @@ import ua.training.game.dao.mapper.HistoryMapper;
 import ua.training.game.domain.Appeal;
 import ua.training.game.domain.Game;
 import ua.training.game.domain.History;
+import ua.training.game.web.pagination.Page;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class JDBCHistoryDao implements HistoryDao {
     }
 
     @Override
-    public void create(History entity) {
+    public int create(History entity) {
         throw new UnsupportedOperationException("Method is not implemented yet");
     }
 
@@ -119,4 +120,73 @@ public class JDBCHistoryDao implements HistoryDao {
         throw new UnsupportedOperationException("Method is not implemented yet");
     }
 
+
+    @Override
+    public int getNumberOfRows() {
+        int historiesCount = 0;
+
+        try (Connection connection = ConnectionPoolHolder.getConnection();
+             PreparedStatement psNumberOfRows = connection.prepareStatement(" SELECT  count(history_id) AS total FROM history")) {
+            ResultSet rs = psNumberOfRows.executeQuery();
+
+            if (rs.first()) {
+                historiesCount = rs.getInt("total");
+            }
+
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getMessage());
+            throw new RuntimeException(ex); //TODO check
+        }
+        return historiesCount;
+    }
+
+    @Override
+    public Page<History> getHistoryGameStatisticsByAllGamesAndPlayers(int currentPage, int recordsPerPage) {
+        Page<History> historyPage = new Page<>();
+        List<History> histories = new ArrayList<>();
+        int historiesCount = 0;
+        int offset = currentPage * recordsPerPage - recordsPerPage;
+
+        try (Connection connection = ConnectionPoolHolder.getConnection()) {
+            connection.setAutoCommit(false);
+            try (PreparedStatement psSelectNumberOfRows = connection.prepareStatement(" SELECT  count(history_id) AS total FROM history");
+                 PreparedStatement psSelectHistories = connection.prepareStatement(" SELECT  * FROM history LIMIT ?, ?")) {
+
+                ResultSet rs = psSelectNumberOfRows.executeQuery();
+
+                if (rs.first()) {
+                    historiesCount = rs.getInt("total");
+                }
+
+
+                psSelectHistories.setInt(1, offset);
+                psSelectHistories.setInt(2, recordsPerPage);
+
+                rs = psSelectHistories.executeQuery();
+                HistoryMapper historyMapper = new HistoryMapper();
+
+                while (rs.next()) {
+                    History history = historyMapper.extractFromResultSet(rs);
+                    histories.add(history);
+                }
+                connection.commit();
+                connection.setAutoCommit(true);
+
+                historyPage.setCurrentPage(currentPage);
+                historyPage.setEntries(histories);
+                historyPage.setNumberOfEntries(historiesCount);
+                historyPage.setPageSize(recordsPerPage);
+
+
+            } catch (SQLException ex) {
+                connection.rollback();
+                connection.setAutoCommit(true);
+                LOGGER.error(ex.getMessage());
+            }
+
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getMessage());
+        }
+        return historyPage;
+    }
 }

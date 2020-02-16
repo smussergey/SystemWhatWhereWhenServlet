@@ -25,7 +25,7 @@ public class JDBCQuestionDao implements QuestionDao {
     }
 
     @Override
-    public void create(Question entity) {
+    public int create(Question entity) {
         throw new UnsupportedOperationException("Method is not implemented");
     }
 

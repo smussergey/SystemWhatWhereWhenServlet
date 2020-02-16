@@ -75,8 +75,8 @@ public class GameService {
 //        return gameRepository.save(game);
 //    }
 
-    public void save(Game game) {
-        daoFactory.createGameDao().create(game);
+    public int save(Game game) {
+        return daoFactory.createGameDao().create(game);
     }
 
 //    @Transactional

@@ -20,8 +20,9 @@ public class GenerateNewGameRefereeCommand implements Command {
         int maxscores = Integer.valueOf(request.getParameter("maxscores"));
         LOGGER.info(String.format("In GenerateNewGameRefereeCommand, data: playerId = %S, opponentId = %S, maxscores = %S,", firstPlayerId, secondPlayerId, maxscores));
 
-        newGameService.runNewGame(firstPlayerId, secondPlayerId, maxscores);
+        int newGameId = newGameService.runNewGame(firstPlayerId, secondPlayerId, maxscores);
 
-        return "/referee/gamesStatisticsReferee"; // TODO improve
+//        return "/referee/gamesStatisticsReferee"; // TODO improve
+        return "redirect:/referee/gameDetailsReferee" + "?" + "gameid=" + newGameId;
     }
 }

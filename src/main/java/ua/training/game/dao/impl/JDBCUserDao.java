@@ -18,29 +18,42 @@ import java.util.Optional;
 
 public class JDBCUserDao implements UserDao {
     private static final Logger LOGGER = Logger.getLogger(JDBCUserDao.class);
-    private static final String CREATE_USER_QUERY = "INSERT INTO user (name_ua, name_en, email, password, role ) VALUES (?,?,?,?,?)";
+    private static final String INSERT_USER_QUERY = "INSERT INTO user (name_ua, name_en, email, password, role ) VALUES (?,?,?,?,?)";
     private static final String GET_ALL_USERS_DTOS_BY_ROLE_QUERY = "SELECT user_id, name_en, name_ua FROM user WHERE user.role = ?";
 
     public JDBCUserDao() {
     }
 
     @Override
-    public void create(User user) {
+    public int create(User user) {
+        int createdUserlId = 0;
+        ResultSet rs;
+
         try (Connection connection = ConnectionPoolHolder.getConnection();
-             PreparedStatement ps = connection.prepareStatement(CREATE_USER_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement psInsertUser = connection.prepareStatement(INSERT_USER_QUERY, Statement.RETURN_GENERATED_KEYS)) {
 
-            ps.setString(1, user.getNameUa());
-            ps.setString(2, user.getNameEn());
-            ps.setString(3, user.getEmail());
-            ps.setString(4, user.getPassword());
-            ps.setString(5, user.getRole().name());
+            psInsertUser.setString(1, user.getNameUa());
+            psInsertUser.setString(2, user.getNameEn());
+            psInsertUser.setString(3, user.getEmail());
+            psInsertUser.setString(4, user.getPassword());
+            psInsertUser.setString(5, user.getRole().name());
 
-            ps.executeUpdate();
+            int rowAffected = psInsertUser.executeUpdate();
+
+            if (rowAffected == 0) {
+                throw new SQLException("Creating User failed, no rows affected.");//TODO
+            }
+            rs = psInsertUser.getGeneratedKeys();
+
+            if (rs.next()) {
+                createdUserlId = rs.getInt(1);
+            }
             LOGGER.info("In create method: user was created");
         } catch (SQLException ex) {
             LOGGER.error(ex.getMessage());
             throw new RuntimeException(ex); //TODO check
         }
+        return createdUserlId;
     }
 
     @Override
