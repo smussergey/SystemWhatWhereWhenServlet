@@ -47,7 +47,18 @@
         <fmt:message key="registration.form.header"/>
     </h2>
     <div class="form-input-error">
-        <%--        <span th:if="${error}" th:text="#{login.message.wrong.login.or.password}"></span>--%>
+        <c:if test="${requestScope.nameUaError}">
+            <p><fmt:message key="validation.name.ua.pattern"/> </p>
+        </c:if>
+        <c:if test="${requestScope.nameEnError}">
+            <p><fmt:message key="validation.name.en.pattern"/> </p>
+        </c:if>
+        <c:if test="${requestScope.nameUaError}">
+            <p><fmt:message key="validation.email.pattern"/> </p>
+        </c:if>
+        <c:if test="${requestScope.nameUaError}">
+            <p><fmt:message key="validation.password.cannot.be.blank"/> </p>
+        </c:if>
     </div>
 
     <div class="panel-body">
